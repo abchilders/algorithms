@@ -239,12 +239,31 @@ string PA1::decodeBits(vector<bool> bits, unordered_map<char, string> huffmanMap
     return result.str();
 }
 
-//PA #1 TODO: Using the supplied Huffman map compression, converts the supplied text into a series of bits (boolean values)
+//PA #1 TO TEST: Using the supplied Huffman map compression, converts the supplied text into a series of bits (boolean values)
 vector<bool> PA1::toBinary(vector<string> text, unordered_map<char, string> huffmanMap)
 {
     vector<bool> result{};
 
-	// for each character in the given text
+	// for each string in the vector
+	for (auto word : text)
+	{
+		// for each character in the string
+		for (auto ch : word)
+		{
+			// translate the character's encoding into binary
+			for (auto bit : huffmanMap[ch])
+			{
+				if (bit == '0')
+				{
+					result.push_back(0); 
+				}
+				else
+				{
+					result.push_back(1); 
+				}
+			}
+		}
+	}
 	
     return result;
 }
