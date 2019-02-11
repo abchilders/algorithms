@@ -1,4 +1,7 @@
-// test
+/* Changes 2019/02/10:
+- altered loop in huffmanTreeFromText to be a for loop operating n-1 times, rather 
+	than checking if the loop was empty each time
+*/
 
 #include "PA1.h"
 
@@ -20,7 +23,7 @@
 	//1.	When merging the two smallest subtrees, make sure to place the 
 	//      smallest tree on the left side!
 
-// Generates a Huffman character tree from the supplied vector of strings
+// Builds a Huffman character tree from the supplied vector of strings.
 HuffmanTree<char>* PA1::huffmanTreeFromText(vector<string> data)
 {
 	//store frequencies in hashtable
@@ -44,8 +47,8 @@ HuffmanTree<char>* PA1::huffmanTreeFromText(vector<string> data)
 		forest.push(new HuffmanTree<char>(kvp.first, kvp.second)); 
 	}
 
-	// while there are still multiple forests to be merged
-	while (forest.size() > 1)
+	// for n characters, we perform n-1 merge operations
+	for (int i = 0; i < frequencies.size() - 1; i++)
 	{
 		// merge the top 2 trees
 		// get two trees with least weight on PQ, merge them, and push back into PQ
@@ -124,8 +127,7 @@ void huffmanEncodingMapFromTreeHelper(
 		return; 
 	}
 }
-//PA #1 TODO: Generates a Huffman encoding map from the supplied Huffman tree
-//NOTE: I used a recursive helper function to solve this!
+// Generates a Huffman encoding map from the supplied Huffman tree
             //char, binary code
 unordered_map<char, string> PA1::huffmanEncodingMapFromTree(HuffmanTree<char> *tree)
 {
