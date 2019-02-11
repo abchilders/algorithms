@@ -16,6 +16,8 @@ private:
 	HuffmanNode<T> *_right_child = nullptr;
 
 public:
+	// constructor - given two children, it assigns the children to this internal
+	// node and sets this node's weight = the sum of its children's weights
     HuffmanInternalNode(HuffmanNode<T> *left_child, HuffmanNode<T> *right_child) : HuffmanNode<T>()
 	{
 		if (left_child != nullptr && right_child != nullptr)

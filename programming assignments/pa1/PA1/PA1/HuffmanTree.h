@@ -64,7 +64,7 @@ public:
 		}
 	}
 
-	// returns the root's weight?
+	// returns the root's weight
 	virtual int getWeight()
 	{
 		return _root->getWeight();
