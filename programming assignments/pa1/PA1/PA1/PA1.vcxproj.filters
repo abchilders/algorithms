@@ -58,5 +58,24 @@
     <Text Include="class_outlines.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="test.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="pa1test.compressed">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="pa1test.map">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="mapquickprintkiosk_aug2017.pdf">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="tiny-lock-128.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

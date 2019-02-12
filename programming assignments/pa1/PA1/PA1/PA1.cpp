@@ -64,25 +64,8 @@ HuffmanTree<char>* PA1::huffmanTreeFromText(vector<string> data)
 	return forest.top(); 
 }
 
-// INCOMPLETE
-// helper function for huffmanTreeFromMap
-// Build a tree from each char's encoding. Pass the same tree among each recursive
-// call.
-void huffmanTreeFromMapHelper(
-	pair<char, string> the_char,
-	int current_depth,
-	HuffmanNode<char>* node
-)
-{
-	if (node == nullptr)
-	{
-		// create a new tree
-		// HuffmanNode<char>* new_root = new HuffmanNode<char>; 
-	}
-}
-
-//PA #1 TODO: Generates a Huffman character tree from the supplied encoding map
-//NOTE: I used a recursive helper function to solve this!
+//PA #1 TO TEST: Generates a Huffman character tree from the supplied encoding map
+// Helper function for decodeBits().
 HuffmanTree<char>* PA1::huffmanTreeFromMap(unordered_map<char, string> huffmanMap)
 {
     //Generates a Huffman Tree based on the supplied Huffman Map.Recall that a 
@@ -90,10 +73,9 @@ HuffmanTree<char>* PA1::huffmanTreeFromMap(unordered_map<char, string> huffmanMa
 	//Each digit(0, 1) 
     //in a given code corresponds to a left branch for 0 and right branch for 1.
 
-	// CAN WE ASSUME THAT WE ARE GIVEN A MAP WITH CONTENTS OF SOME SORT?
-
-	// create an initial tree
-	HuffmanTree<char>* char_tree{}; 
+	// start an initial tree
+	HuffmanInternalNode<char>* root = new HuffmanInternalNode<char>{ nullptr, nullptr };
+	HuffmanTree<char>* tree = new HuffmanTree<char>{ root }; 
 
 	// AN IDEA:
 	// We know that each character in the map represents a leaf node. 
@@ -101,17 +83,59 @@ HuffmanTree<char>* PA1::huffmanTreeFromMap(unordered_map<char, string> huffmanMa
 	// Then, once we hit the path for our first character, move up one level,
 	// and move to the next leaf node...? 
 
-	// HEY!!!!! CALL HELPER FUNCTION HERE
-
-	// An idea: call this helper function on each individual character in the map
-	// Build tree using code for each character.
+	// Build the tree using the encoding for each character.
 	for (auto kvp : huffmanMap)
 	{
-		// we start operating at the root of the tree, which is depth 0
-		huffmanTreeFromMapHelper(kvp, 0, char_tree->getRoot());
+		// create a new internal node to be the parent of the next character
+		 
+		HuffmanInternalNode<char>* current = root; 
+
+		char value = kvp.first; 
+		string path = kvp.second; 
+		
+		// walk down the tree on the given path, creating internal nodes as needed
+		for (int i = 0; i < path.length() - 1; i++)
+		{
+			// represents whether we go to the left (0) or right (1) next
+			char side = path[i]; 
+			if (side == '0')
+			{
+				// does the current node need an internal node to be created on
+				// its left side before we walk down?
+				if (current->getLeftChild() == nullptr)
+				{
+					current->setLeftChild(new HuffmanInternalNode<char>{ nullptr, nullptr });
+				}
+				current = dynamic_cast<HuffmanInternalNode<char>*>(current->getLeftChild()); 
+			}
+			else
+			{
+				// does the current node need an internal node to be created on its
+				// right side before we walk down?
+				if (current->getRightChild() == nullptr)
+				{
+					current->setRightChild(new HuffmanInternalNode<char>{ nullptr, nullptr }); 
+				}
+				current = dynamic_cast<HuffmanInternalNode<char>*>(current->getRightChild());
+			}
+		}
+
+		// now that we've walked down the entire path except the last step, we 
+		// create a leaf node for the current character
+		char last_side = path[path.length() - 1]; 
+		if (last_side == '0')
+		{
+			// we create a leaf node with the given value and a dummy weight of 0
+			current->setLeftChild(new HuffmanLeafNode<char>{ value, 0 });  
+		}
+		else
+		{
+			// same thing as if branch, but on the right side
+			current->setRightChild(new HuffmanLeafNode<char>{ value, 0 }); 
+		}
 	}
 
-    return nullptr;
+    return tree;
 }
 
 // build a map for each char's encoding. pass by reference so that each 
@@ -223,6 +247,9 @@ string PA1::decodeBits(vector<bool> bits, unordered_map<char, string> huffmanMap
     //To solve this problem, I converted the Huffman Map into a Huffman Tree and used 
     //tree traversals to convert the bits back into text.
 
+	// convert huffmanMap to a HuffmanTree
+	HuffmanTree<char>* tree = huffmanTreeFromMap(huffmanMap); 
+
 	// write to string: result << "abc" << endl; 
 	// we do this because strings are a fixed size - constantly creating new 
 	// string and reassigning is wasteful. doing this saves time - creates 
@@ -234,6 +261,33 @@ string PA1::decodeBits(vector<bool> bits, unordered_map<char, string> huffmanMap
 	if leaf node:
 	result << node->value
 	*/
+
+	HuffmanNode<char>* current = tree->getRoot(); 
+	for (auto bit : bits)
+	{
+
+		// move current in the given direction
+		if (bit == 0)
+		{
+			current = dynamic_cast<HuffmanInternalNode<char>*>(current)->getLeftChild();
+		}
+		else
+		{
+			current = dynamic_cast<HuffmanInternalNode<char>*>(current)->getRightChild();
+		}
+
+		// is current a leaf node?
+		if (current->isLeaf() == true)
+		{
+			// write value to string
+			HuffmanLeafNode<char>* leaf = 
+				dynamic_cast<HuffmanLeafNode<char>*>(current); 
+			result << leaf->getValue(); 
+
+			// reset current to root
+			current = tree->getRoot(); 
+		}
+	}
 
 	// converts from ostringstream into actual string
     return result.str();

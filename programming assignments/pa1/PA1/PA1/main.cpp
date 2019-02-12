@@ -3,16 +3,18 @@ Assignment: PA #1 - Huffman Coding
 Description: This program uses Huffman codes to compress files. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 5 hours + 
+Completion time: 7.5 hours
 In completing this program, I received help from the following people:
 	N/A
 */
 
 /* QUESTIONS:
-- I don't see a test.txt included in the files for this project, but I do see it 
-	in the sample files. Am I meant to import that, or is it supposed
-	to be a test case for an empty file? 
 - How do I analyze the complexity of my toBinary function?
+*/
+
+/*TO DO:
+- test that my stuff actually works with compression and decompression
+- exception handling
 */
 
 /* NOTE:
