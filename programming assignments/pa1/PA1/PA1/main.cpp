@@ -3,7 +3,7 @@ Assignment: PA #1 - Huffman Coding
 Description: This program uses Huffman codes to compress files. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 7.5 hours + 01:15 - 
+Completion time: 7.75 hours
 In completing this program, I received help from the following people:
 	N/A
 */
