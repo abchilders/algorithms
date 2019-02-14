@@ -1,3 +1,15 @@
+/*
+Assignment: PA #1 - Huffman Coding
+Description: This program uses Huffman codes to compress files.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 8.75 hours 
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// This file is written by Adam Carter, with some of my own comments added. 
+
 #ifndef BINARY_FILE_H
 #define BINARY_FILE_H
 
@@ -64,8 +76,8 @@ public:
 		output_file.close();
 	}
 
-	//reads a file written with writeToFile into a vector of bools
-	//ALEX'S NOTE: this vector of bools is used to represent the compressed file
+	// reads a file written with writeToFile into a vector of bools
+	// Alex's note: this vector of bools is used to represent the compressed file
 	static vector<bool> readFromFile(const string &input_file_name)
 	{
 		vector<bool> result{};

@@ -1,3 +1,15 @@
+/*
+Assignment: PA #1 - Huffman Coding
+Description: This program uses Huffman codes to compress files.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 8.75 hours
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// This file is written by Adam Carter, with some of my own comments added.
+
 #ifndef HUFFMAN_TREE_H
 #define HUFFMAN_TREE_H
 
@@ -38,7 +50,7 @@ public:
 		_root = root;
 	}
 
-	// destructor -- I'll trust that Adam did this correctly
+	// destructor 
 	~HuffmanTree()
 	{
 		vector<HuffmanNode<T> *> nodes{};

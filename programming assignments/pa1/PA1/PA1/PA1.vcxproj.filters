@@ -38,10 +38,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PA1.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="PA1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -61,21 +61,8 @@
     <Text Include="test.txt">
       <Filter>Resource Files</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="pa1test.compressed">
+    <Text Include="blank.txt">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="pa1test.map">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="mapquickprintkiosk_aug2017.pdf">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="tiny-lock-128.png">
-      <Filter>Resource Files</Filter>
-    </Image>
+    </Text>
   </ItemGroup>
 </Project>

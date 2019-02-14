@@ -1,3 +1,15 @@
+/*
+Assignment: PA #1 - Huffman Coding
+Description: This program uses Huffman codes to compress files.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 8.75 hours
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// This file is written by Adam Carter.
+
 #ifndef STRINGSPLITTER_H
 #define STRINGSPLITTER_H
 

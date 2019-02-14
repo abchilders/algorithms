@@ -1,0 +1,106 @@
+This is an outline of all the pre-written classes and their methods available
+to me, for my own reference:
+
+class BinaryFile
+{
+public: 
+	//writes a vector of strings to a file.  Assumes each character in each string is either a 0 or 1
+	static void writeToFile(const vector<bool> &content, const string &output_file_name);
+
+	//reads a file written with writeToFile into a vector of bools
+	// ALEX'S NOTE: this vector of bools is used to represent the compression
+	static vector<bool> readFromFile(const string &input_file_name);
+};
+
+class HuffmanTree
+{
+private:
+	// pointer to the root of the tree
+	HuffmanNode<T> *_root; 
+
+public:
+	// constructor - creates tree with one Huffman node
+	HuffmanTree(const T& value, const int &weight); 
+
+	// returns the root node of the tree
+	HuffmanNode<T> *getRoot();
+
+	// constructor - merges 2 existing trees
+	HuffmanTree(HuffmanTree<T> *left, HuffmanTree<T> *right);
+
+	// constructor - creates tree given already-existing node
+	HuffmanTree(HuffmanInternalNode<T> *root);
+
+	// destructor
+	~HuffmanTree();
+
+	// returns the root's weight
+	virtual int getWeight();
+}
+
+class HuffmanNode {
+protected:
+	int _weight;
+public:
+	// constructor
+    HuffmanNode();
+
+	//gets weight of huffman node and children
+	virtual int getWeight();
+
+	//determines if node is a leaf or not
+	//false by default
+	virtual bool isLeaf() = 0;
+};
+
+class HuffmanInternalNode : public HuffmanNode<T>
+{
+private:
+	HuffmanNode<T> *_left_child = nullptr;
+	HuffmanNode<T> *_right_child = nullptr;
+
+public:
+	// constructor - given two children, it assigns the children to this internal
+	// node and sets this node's weight = the sum of its children's weights
+    HuffmanInternalNode(HuffmanNode<T> *left_child, HuffmanNode<T> *right_child) : HuffmanNode<T>();
+
+	//internal nodes are not leaf nodes!
+	virtual bool isLeaf()
+	{
+		return false; 
+	}
+	
+	HuffmanNode<T> *getLeftChild() const;
+
+	HuffmanNode<T> *getRightChild() const;
+
+	void setLeftChild(HuffmanNode<T> *node);
+
+	void setRightChild(HuffmanNode<T> *node);
+};
+
+class HuffmanLeafNode : public HuffmanNode<T>
+{
+private:
+	T _value;
+public:
+	// constructor - create leaf node with value (char) and its weight = its frequency
+	HuffmanLeafNode(const T &value, const int &frequency) : HuffmanNode<T>();
+
+	const T &getValue();
+
+	virtual bool isLeaf()
+	{
+		return true;
+	}
+};
+
+class StringSplitter
+{
+public:
+
+	//Breaks apart the supplied text based on the given delimiter
+	//static function do not affect the internal state
+	//(e.g. variables) of a given class instance
+	static vector<string> split(string text, string delimiter);
+};

@@ -134,19 +134,12 @@
     <ClCompile Include="PA1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="blank.txt" />
     <Text Include="kennedy.txt" />
     <Text Include="pa1test.txt" />
     <Text Include="savio.txt" />
     <Text Include="class_outlines.txt" />
     <Text Include="test.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mapquickprintkiosk_aug2017.pdf" />
-    <None Include="pa1test.compressed" />
-    <None Include="pa1test.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="tiny-lock-128.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

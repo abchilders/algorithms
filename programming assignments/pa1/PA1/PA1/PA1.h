@@ -1,3 +1,15 @@
+/*
+Assignment: PA #1 - Huffman Coding
+Description: This program uses Huffman codes to compress files.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 8.75 hours
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// This file is written by Adam Carter, with some of my own comments added.
+
 #ifndef PA_1_H
 #define PA_1_H
 
@@ -30,11 +42,10 @@ class PA1
 {
 public:
 
-
 	// Generates a Huffman character tree from the supplied text
 	static HuffmanTree<char> *huffmanTreeFromText(vector<string> data);
 
-	//PA #1 TO TEST: Generates a Huffman character tree from the supplied encoding map
+	// Generates a Huffman character tree from the supplied encoding map
 	static HuffmanTree<char> *huffmanTreeFromMap(unordered_map<char, string> huffmanMap);
 
 	// Generates a Huffman encoding map from the supplied Huffman tree
@@ -46,12 +57,11 @@ public:
 	// Reads an encoding map from a file.  Needed for decompression.
 	static unordered_map<char, string> readEncodingMapFromFile(string file_name);
 
-	//PA #1 TO TEST: Converts a vector of bits (bool) back into readable text using the supplied Huffman map
+	// Converts a vector of bits (bool) back into readable text using the supplied Huffman map
 	static string decodeBits(vector<bool> bits, unordered_map<char, string> huffmanMap);
 
 	// Using the supplied Huffman map compression, converts the supplied text into a series of bits (boolean values)
 	static vector<bool> toBinary(vector<string> text, unordered_map<char, string> huffmanMap);
-
 };
 
 #endif

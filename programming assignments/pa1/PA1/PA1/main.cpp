@@ -3,10 +3,12 @@ Assignment: PA #1 - Huffman Coding
 Description: This program uses Huffman codes to compress files. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 7.75 hours
+Completion time: 8.75 hours
 In completing this program, I received help from the following people:
 	N/A
 */
+
+// This file is mostly written by Adam Carter, with some of my own comments added. 
 
 /* QUESTIONS:
 - How do I analyze the complexity of my toBinary function?
@@ -15,16 +17,6 @@ In completing this program, I received help from the following people:
 /*TO DO:
 - test that my stuff actually works with compression and decompression
 - exception handling
-*/
-
-/* NOTE:
-- To set command argument: Properties -> Debugging -> Arguments
-	- can set test, etc. 
-- Most code will be written in PA1.cpp
-- Check that root is not null!!
-- If weird errors: Properties -> General -> Windows SDK version
-	of max number
-	-(update at some point in future)
 */
 
 #include "HuffmanTree.h"
@@ -62,10 +54,11 @@ static vector<string> readFile(string input_file_name)
 //test function for PA1
 void pa1Test()
 {
-	vector<string> files{ "pa1test.txt", "test.txt", "savio.txt", "kennedy.txt" };
+	vector<string> files{ "pa1test.txt", "test.txt", "savio.txt", "kennedy.txt"};
+	
 	for (string file : files)
 	{
-		cout << "Analzying file " << file << "..." << endl;
+		cout << "Analyzing file " << file << "..." << endl;
 
 		//PROVIDED: read contents of file into vector of strings
 		vector<string> file_contents = readFile(file);
@@ -144,6 +137,12 @@ void pa1Test2()
 	}
 
 	//TEST #3: write map to file
+	/* Alex's note- I don't think I'm supposed to mess with this main testing function,
+		so notice: the names of the files we're about to create will look weird. 
+		Since we never removed the ".txt" extension from file_name above,
+		the files that we're about to create will be called "pa1test.txt.map" and 
+		"pa1test.txt.compressed" respectively. Don't be alarmed. 
+	*/
 	vector<bool> raw_stream = PA1::toBinary(file_contents, encoder);
 	string map_file = string(file_name) + ".map";
 	PA1::writeEncodingMapToFile(encoder, map_file);
