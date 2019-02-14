@@ -55,13 +55,7 @@
     <Text Include="savio.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="class_outlines.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="test.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="blank.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
