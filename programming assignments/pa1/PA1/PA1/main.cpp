@@ -10,15 +10,6 @@ In completing this program, I received help from the following people:
 
 // This file is mostly written by Adam Carter, with some of my own comments added. 
 
-/* QUESTIONS:
-- How do I analyze the complexity of my toBinary function?
-*/
-
-/*TO DO:
-- test that my stuff actually works with compression and decompression
-- exception handling
-*/
-
 #include "HuffmanTree.h"
 #include <fstream>
 #include <iostream>
