@@ -33,6 +33,13 @@ private:
 			// node name, pointer to graph node
 	unordered_map<string, StringGraphNode*> _graph; 
 
+	// holds all the campus-designated names for nodes given in distances.csv
+				// node name, HSU name
+	unordered_map<string, string> _building_names; 
+
+	// holds all the shortest distance calculations we've already done
+	//UPDATE LATER: unordered_map<string, unordered_map<string, int>> _shortest_distances; 
+
 public:
 	void addVertex(const string& key)
 	{
@@ -95,25 +102,27 @@ public:
 					// if we get to the end, we have NOT seen the key
 					// so mark as visited in our distances map
 					distances[key] = weight; 
-				}
 
-				// push all unknown outgoing edges into PQ
-				for (auto edge : top.first->getEdges())
-				{
-					// need to dynamically cast from generic graph node 
-					// into string graph nodes
-					StringGraphNode* node = dynamic_cast<StringGraphNode*>(edge.first); 
-
-					// is that node already in distances?
-					if (distances.find(node->getKey()) == distances.end())
+					// push all unknown outgoing edges into PQ
+					for (auto edge : top.first->getEdges())
 					{
-						// if not, push it in, accumulating distance
-						to_visit.push(make_pair(node, weight + edge.second)); 
+						// need to dynamically cast from generic graph node 
+						// into string graph nodes
+						StringGraphNode* node = dynamic_cast<StringGraphNode*>(edge.first);
+
+						// is that node already in distances?
+						if (distances.find(node->getKey()) == distances.end())
+						{
+							// if not, push it in, accumulating distance
+							to_visit.push(make_pair(node, weight + edge.second));
+						}
 					}
 				}
 			}
 
 		}
+		// POSSIBLE ADDITION: update this graph's shortest distances hashtable
+		//_shortest_distances[start] = distances; 
 		return distances; 
 	}
 };

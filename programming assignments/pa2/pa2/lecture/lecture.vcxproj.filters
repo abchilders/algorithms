@@ -27,7 +27,7 @@
     <ClInclude Include="StringGraphNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Setup.h">
+    <ClInclude Include="Tasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -40,10 +40,7 @@
     <None Include="data.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="main.py">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="graph.py">
+    <None Include="distances.csv">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

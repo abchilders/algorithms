@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 0.5 + 
+Completion time: 1.5 + 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -13,12 +13,13 @@ In completing this program, I received help from the following people:
 // For Python: open in Visual Studio Code.
 
 /* TO DO:
--change input file from data.csv to whatever the real results CSV is
+	- Make it so that we don't have to recalculate shortest paths every time we 
+		want to look up a new node. 
+	- The graph isn't aware of its edges when we create it. Fix this. 
 */
 
-#include "CampusGraph.h"
 #include "CsvParser.h"
-#include <iostream>
+#include "Tasks.h"
 
 // NOTE: in data.csv, format is [start], [end], [weight]
 // To create bidirectional edges, must connect as well with [end], [start], [weights]
@@ -27,26 +28,17 @@ In completing this program, I received help from the following people:
 int main(void)
 {
 	// Example of how to parse a CSV file for graph building
-	CsvStateMachine csm{ "data.csv" }; 
+	CsvStateMachine csm{ "distances.csv" }; 
 
 	// vector of CSV rows
 	vector<vector<string>> data = csm.processFile(); 
 
-	// create graph -- for our purposes, we'll assume places on the graph
-	// are bidirectionally connected
-	// DESIGN DECISION: i think pass by reference will minimize complexity?
-
-	// get user input
-	string start_loc = ""; 
-	string end_loc = ""; 
-
-	cout << "**HSU Transit Time Calculator**" << endl; 
-	cout << "Enter starting location: ";
-	cin >> start_loc; 
-	cout << "Enter destination: ";
-	cin >> end_loc; 
+	// create graph -- unidirectionally connected
+	CampusGraph* hsu_graph = new CampusGraph{};
+	Tasks::createGraph(data, hsu_graph); 
 
 	// calculate travel time
+	Tasks::userInterface(hsu_graph); 
 
 	// building graph
    CampusGraph graph{};

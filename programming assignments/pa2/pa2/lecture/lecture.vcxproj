@@ -119,15 +119,14 @@
     <ClInclude Include="StringGraphNode.h" />
     <ClInclude Include="CsvParser.h" />
     <ClInclude Include="GraphNode.h" />
-    <ClInclude Include="Setup.h" />
+    <ClInclude Include="Tasks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data.csv" />
-    <None Include="graph.py" />
-    <None Include="main.py" />
+    <None Include="distances.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
