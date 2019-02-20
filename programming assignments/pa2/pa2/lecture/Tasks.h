@@ -10,6 +10,7 @@ class Tasks
 public:
 	// Takes a vector of CSV data representing time between campus buildings.
 	// Creates a campus graph with the given data. 
+	// IDEA: have this create a new CampusGraph and return the pointer to it!!!
 	static void createGraph(const vector<vector<string>>& campus_data,
 									CampusGraph* the_graph)
 	{
@@ -21,6 +22,9 @@ public:
 			int weight = stoi(edge_info[2]); 
 
 			// add the vertices to the graph and connect unidirectionally
+			// THE PROBLEM! This creates a whole new node each time. We need
+			// to check that this node doesn't already exist BEFORE using the 
+			// constructor to create a whole new node!!!
 			the_graph->addVertex(start); 
 			the_graph->addVertex(end); 
 			the_graph->connectVertex(start, end, weight); 

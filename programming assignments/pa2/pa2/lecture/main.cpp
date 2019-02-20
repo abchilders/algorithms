@@ -5,12 +5,14 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 1.5 + 
+Completion time: 1.5 + 23:00 - 
 In completing this program, I received help from the following people:
 	N/A
 */
 
 // For Python: open in Visual Studio Code.
+
+// NOTE: changed Project Options -> C/C++ -> General -> Debug Information format -> C7, not program database for edit and continue
 
 /* TO DO:
 	- Make it so that we don't have to recalculate shortest paths every time we 
