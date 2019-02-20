@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 1.5 + 23:00 - 
+Completion time: 2.25 (i need to make up extra 5 minutes next time) + 
 In completing this program, I received help from the following people:
 	N/A
 */
