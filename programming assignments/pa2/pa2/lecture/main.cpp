@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 2.25 (i need to make up extra 5 minutes next time) + 19:30 + 
+Completion time: 4.5 + 22:15 - 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -17,10 +17,17 @@ In completing this program, I received help from the following people:
 /* TO DO:
 	- Make it so that we don't have to recalculate shortest paths every time we 
 		want to look up a new node. 
+	- Fully implement building codes and names in the user interface!!!
 */
 
 #include "CsvParser.h"
 #include "Tasks.h"
+
+// holds data on how long it takes to get from node to node
+const string DISTANCE_FILE = "distances.csv"; 
+
+// the names of all buildings on campus, their abbreviations, and their node locations
+const string CODES_FILE = "facility_codes.csv"; 
 
 // NOTE: in data.csv, format is [start], [end], [weight]
 // To create bidirectional edges, must connect as well with [end], [start], [weights]
@@ -28,14 +35,16 @@ In completing this program, I received help from the following people:
 
 int main(void)
 {
-	// Example of how to parse a CSV file for graph building
-	CsvStateMachine csm{ "distances.csv" }; 
+	// Parsing CSV files for graph building
+	CsvStateMachine distances_csm{ DISTANCE_FILE }; 
+	CsvStateMachine codes_csm{ CODES_FILE }; 
 
 	// vector of CSV rows
-	vector<vector<string>> data = csm.processFile(); 
+	vector<vector<string>> data = distances_csm.processFile(); 
+	vector<vector<string>> facility_codes = codes_csm.processFile(); 
 
-	// create graph -- unidirectionally connected
-	CampusGraph* hsu_graph = Tasks::createGraph(data); 
+	// create unidirectional graph and add building abbr. information
+	CampusGraph* hsu_graph = Tasks::createGraph(data, facility_codes); 
 
 	// calculate travel time
 	Tasks::userInterface(hsu_graph); 

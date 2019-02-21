@@ -11,11 +11,11 @@ public:
 	// Takes a vector of CSV data representing time between campus buildings.
 	// Creates a campus graph with the given data. 
 	// IDEA: have this create a new CampusGraph and return the pointer to it!!!
-	static CampusGraph* createGraph(const vector<vector<string>>& campus_data)
+	static CampusGraph* createGraph(const vector<vector<string>>& campus_data, const vector<vector<string>>& codes)
 	{
 		CampusGraph* the_graph = new CampusGraph{}; 
 
-		// for each row in the given data
+		// for each row in the given distance data
 		for (auto edge_info : campus_data)
 		{
 			string start = edge_info[0]; 
@@ -35,6 +35,9 @@ public:
 			// connect unidirectionally
 			the_graph->connectVertex(start, end, weight); 
 		}
+
+		// then add information on each building abbreviation
+
 		return the_graph; 
 	}
 

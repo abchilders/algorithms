@@ -33,12 +33,9 @@ private:
 			// node name, pointer to graph node
 	unordered_map<string, StringGraphNode*> _graph;
 
-	// holds all the campus-designated names for nodes given in distances.csv
-				// node name, HSU name
-	unordered_map<string, string> _building_names;
-
 	// holds all the shortest distance calculations we've already done,
 	// to avoid recalculating every time we start at a certain node
+	// MAY REMOVE LATER
 	unordered_map<string, unordered_map<string, int>> _shortest_distances; 
 
 public:
@@ -123,6 +120,7 @@ public:
 
 		}
 		// update this graph's shortest distances hashtable
+		// MAY REMOVE LATER
 		_shortest_distances[start] = distances; 
 		return distances;
 	}

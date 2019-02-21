@@ -43,5 +43,8 @@
     <None Include="distances.csv">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="facility_codes.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
