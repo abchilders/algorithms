@@ -11,9 +11,10 @@ public:
 	// Takes a vector of CSV data representing time between campus buildings.
 	// Creates a campus graph with the given data. 
 	// IDEA: have this create a new CampusGraph and return the pointer to it!!!
-	static void createGraph(const vector<vector<string>>& campus_data,
-									CampusGraph* the_graph)
+	static CampusGraph* createGraph(const vector<vector<string>>& campus_data)
 	{
+		CampusGraph* the_graph = new CampusGraph{}; 
+
 		// for each row in the given data
 		for (auto edge_info : campus_data)
 		{
@@ -21,14 +22,20 @@ public:
 			string end = edge_info[1];
 			int weight = stoi(edge_info[2]); 
 
-			// add the vertices to the graph and connect unidirectionally
-			// THE PROBLEM! This creates a whole new node each time. We need
-			// to check that this node doesn't already exist BEFORE using the 
-			// constructor to create a whole new node!!!
-			the_graph->addVertex(start); 
-			the_graph->addVertex(end); 
+			// add the vertices to the graph if they don't already exist 
+			if (the_graph->nodeExists(start) == false)
+			{
+				the_graph->addVertex(start);
+			}
+			if (the_graph->nodeExists(end) == false)
+			{
+				the_graph->addVertex(end);
+			}
+			
+			// connect unidirectionally
 			the_graph->connectVertex(start, end, weight); 
 		}
+		return the_graph; 
 	}
 
 	// Interfaces with user. Gets start and end locations; prints the amount of time

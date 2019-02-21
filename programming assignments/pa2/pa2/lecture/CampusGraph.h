@@ -31,26 +31,27 @@ class CampusGraph
 private:
 	// represents our full campus graph
 			// node name, pointer to graph node
-	unordered_map<string, StringGraphNode*> _graph; 
+	unordered_map<string, StringGraphNode*> _graph;
 
 	// holds all the campus-designated names for nodes given in distances.csv
 				// node name, HSU name
-	unordered_map<string, string> _building_names; 
+	unordered_map<string, string> _building_names;
 
-	// holds all the shortest distance calculations we've already done
-	//UPDATE LATER: unordered_map<string, unordered_map<string, int>> _shortest_distances; 
+	// holds all the shortest distance calculations we've already done,
+	// to avoid recalculating every time we start at a certain node
+	unordered_map<string, unordered_map<string, int>> _shortest_distances; 
 
 public:
 	void addVertex(const string& key)
 	{
 		// adds an item to our graph
-		_graph[key] = new StringGraphNode(key); 
+		_graph[key] = new StringGraphNode(key);
 	}
 
 	// passes in an already-existing node directly
 	void addVertex(StringGraphNode* node)
 	{
-		_graph[node->getKey()] = node; 
+		_graph[node->getKey()] = node;
 	}
 
 	// connect two nodes
@@ -60,11 +61,11 @@ public:
 		const int& weight,
 		bool is_bidirectional = false) // bidirectional is false by default
 	{
-		_graph[source]->addEdge(_graph[sink], weight); 
+		_graph[source]->addEdge(_graph[sink], weight);
 		if (is_bidirectional == true)
 		{
 			// connect it the other way round 
-			connectVertex(sink, source, weight, false); 
+			connectVertex(sink, source, weight, false);
 		}
 	}
 
@@ -74,26 +75,26 @@ public:
 	unordered_map<string, int> computeShortestPath(const string& start)
 	{
 		// will return this 
-		unordered_map<string, int> distances{};  
+		unordered_map<string, int> distances{};
 
 		// make sure we received a valid starting point
 		if (_graph.find(start) != _graph.end()) // if we found the starting point 
 		{
-								// pointer, distance
+			// pointer, distance
 			priority_queue<pair<StringGraphNode*, int>, // what's in the PQ
 				vector<pair<StringGraphNode*, int>>, // how we store these pairs
 				PairComparer> to_visit{};  // how we compare each pair
-			
+
 			// prime the PQ with starting location
-			to_visit.push(make_pair(_graph[start], 0)); 
+			to_visit.push(make_pair(_graph[start], 0));
 
 			while (to_visit.empty() == false)
 			{
 				// get item on top of PQ
-				auto top = to_visit.top(); 
-				string key = top.first->getKey(); 
-				int weight = top.second; 
-				to_visit.pop(); 
+				auto top = to_visit.top();
+				string key = top.first->getKey();
+				int weight = top.second;
+				to_visit.pop();
 
 				// have we seen this node yet, in the distances{} map? 
 				// first = node, which has key
@@ -101,7 +102,7 @@ public:
 				{
 					// if we get to the end, we have NOT seen the key
 					// so mark as visited in our distances map
-					distances[key] = weight; 
+					distances[key] = weight;
 
 					// push all unknown outgoing edges into PQ
 					for (auto edge : top.first->getEdges())
@@ -121,9 +122,22 @@ public:
 			}
 
 		}
-		// POSSIBLE ADDITION: update this graph's shortest distances hashtable
-		//_shortest_distances[start] = distances; 
-		return distances; 
+		// update this graph's shortest distances hashtable
+		_shortest_distances[start] = distances; 
+		return distances;
+	}
+
+	// Returns true if a node with the name node_name exists in the graph.
+	bool nodeExists(string node_name)
+	{
+		if (_graph[node_name] == nullptr)
+		{
+			return false; 
+		}
+		else
+		{
+			return true; 
+		}
 	}
 };
 

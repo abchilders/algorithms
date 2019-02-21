@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 2.25 (i need to make up extra 5 minutes next time) + 
+Completion time: 2.25 (i need to make up extra 5 minutes next time) + 19:30 + 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -17,7 +17,6 @@ In completing this program, I received help from the following people:
 /* TO DO:
 	- Make it so that we don't have to recalculate shortest paths every time we 
 		want to look up a new node. 
-	- The graph isn't aware of its edges when we create it. Fix this. 
 */
 
 #include "CsvParser.h"
@@ -36,8 +35,7 @@ int main(void)
 	vector<vector<string>> data = csm.processFile(); 
 
 	// create graph -- unidirectionally connected
-	CampusGraph* hsu_graph = new CampusGraph{};
-	Tasks::createGraph(data, hsu_graph); 
+	CampusGraph* hsu_graph = Tasks::createGraph(data); 
 
 	// calculate travel time
 	Tasks::userInterface(hsu_graph); 

@@ -4,8 +4,6 @@
 #include <unordered_map>
 #include <vector>
 
-//DEBUG: 
-#include <iostream>
 using namespace std;
 
 template <typename Key, typename Value>
@@ -67,15 +65,7 @@ public:
 									// node we want to add as pointer, weight of that edge
     void addEdge(GraphNode<Key, Value> *node, int weight = 1)
     {
-		//DEBUG: ARE WE GETTING PASSED SOMETHING REAL?
-		cout << node->getKey() << " " << node->getValue() << " " << weight << endl; 
-
-		// THE PROBLEM: this isn't having a lasting effect. After this function ends,
-		// the number of vertices goes back down to 0. Why? 
         _vertices[node] = weight;
-
-		// put this here for the sake of having a breakpoint
-		cout << "done?" << endl; 
     }
 
     unordered_map<GraphNode<Key, Value>*, int> getEdges()
