@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 4.5 + 22:15 - 
+Completion time: 4.75 + 13:00 - 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -29,6 +29,9 @@ const string DISTANCE_FILE = "distances.csv";
 // the names of all buildings on campus, their abbreviations, and their node locations
 const string CODES_FILE = "facility_codes.csv"; 
 
+// the names assigned to each node from distances.csv
+const string NODE_NAMES_FILE = "node_names.csv"; 
+
 // NOTE: in data.csv, format is [start], [end], [weight]
 // To create bidirectional edges, must connect as well with [end], [start], [weights]
 	// Weights may differ depending on whether you go up or down stairs, etc. 
@@ -38,11 +41,16 @@ int main(void)
 	// Parsing CSV files for graph building
 	CsvStateMachine distances_csm{ DISTANCE_FILE }; 
 	CsvStateMachine codes_csm{ CODES_FILE }; 
+	CsvStateMachine nodes_csm{ NODE_NAMES_FILE }; 
 
 	// vector of CSV rows
 	vector<vector<string>> data = distances_csm.processFile(); 
 	vector<vector<string>> facility_codes = codes_csm.processFile(); 
+	vector<vector<string>> node_names = nodes_csm.processFile();
 
+	// TO DO: FIGURE OUT HOW TO STORE ABBREVIATIONS/NODE NAMES AND PASS
+	// THEM INTO A CAMPUSGRAPH (or, how much of it to store in the 
+	// graph)
 	// create unidirectional graph and add building abbr. information
 	CampusGraph* hsu_graph = Tasks::createGraph(data, facility_codes); 
 
