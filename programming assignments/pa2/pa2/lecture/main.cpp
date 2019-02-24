@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 4.75 + 13:00 - 
+Completion time: 5.5 + 20:53 (21:00 + 0.125)
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -52,7 +52,7 @@ int main(void)
 	// THEM INTO A CAMPUSGRAPH (or, how much of it to store in the 
 	// graph)
 	// create unidirectional graph and add building abbr. information
-	CampusGraph* hsu_graph = Tasks::createGraph(data, facility_codes); 
+	CampusGraph* hsu_graph = Tasks::createGraph(data, facility_codes, node_names); 
 
 	// calculate travel time
 	Tasks::userInterface(hsu_graph); 

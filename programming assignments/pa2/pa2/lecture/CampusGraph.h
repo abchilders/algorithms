@@ -38,6 +38,11 @@ private:
 	// MAY REMOVE LATER
 	unordered_map<string, unordered_map<string, int>> _shortest_distances; 
 
+	// holds abbreviated and full names of buildings on campus, and which 
+	// node they belong to 
+				// abbr.      <full building name, what node it belongs to>
+	unordered_map<string, pair<string, string>> _building_codes;
+
 public:
 	void addVertex(const string& key)
 	{
@@ -136,6 +141,25 @@ public:
 		{
 			return true; 
 		}
+	}
+
+	// adds a building to the _building_codes hashtable
+	void addBuilding(string abbr, string full_name, string parent_node)
+	{
+		pair<string, string> building_info{ full_name, parent_node }; 
+		_building_codes[abbr] = building_info; 
+	}
+
+	// returns the full name of a building given by its abbreviation
+	string getBuildingName(string abbr)
+	{
+		return _building_codes[abbr].first; 
+	}
+
+	// returns the name of the node that a building belongs to
+	string getBuildingNodeName(string abbr)
+	{
+		return _building_codes[abbr].second; 
 	}
 };
 
