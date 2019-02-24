@@ -5,7 +5,7 @@ Description: This program will use CSV information on campus walking times
 	estimated shortest travel time using Dijkstra's algorithm. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 5.5 + 20:53 (21:00 + 0.125)
+Completion time: 7.25
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -17,7 +17,6 @@ In completing this program, I received help from the following people:
 /* TO DO:
 	- Make it so that we don't have to recalculate shortest paths every time we 
 		want to look up a new node. 
-	- Fully implement building codes and names in the user interface!!!
 */
 
 #include "CsvParser.h"
@@ -48,9 +47,6 @@ int main(void)
 	vector<vector<string>> facility_codes = codes_csm.processFile(); 
 	vector<vector<string>> node_names = nodes_csm.processFile();
 
-	// TO DO: FIGURE OUT HOW TO STORE ABBREVIATIONS/NODE NAMES AND PASS
-	// THEM INTO A CAMPUSGRAPH (or, how much of it to store in the 
-	// graph)
 	// create unidirectional graph and add building abbr. information
 	CampusGraph* hsu_graph = Tasks::createGraph(data, facility_codes, node_names); 
 

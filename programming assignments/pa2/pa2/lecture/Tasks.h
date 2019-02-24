@@ -10,7 +10,6 @@ class Tasks
 public:
 	// Takes a vector of CSV data representing time between campus buildings.
 	// Creates a campus graph with the given data. 
-	// IDEA: have this create a new CampusGraph and return the pointer to it!!!
 	static CampusGraph* createGraph(
 		const vector<vector<string>>& campus_data, 
 		const vector<vector<string>>& buildings,
@@ -78,12 +77,22 @@ public:
 		cin >> end_loc;
 
 		// calculate time to get to all other nodes from start_loc
-		// HEY!!! MAKE THIS MORE EFFICIENT LATER 
 		string start_node = the_graph->getBuildingNodeName(start_loc); 
 		string end_node = the_graph->getBuildingNodeName(end_loc); 
-		unordered_map<string, int> shortest_paths{}; 
-		shortest_paths = the_graph->computeShortestPath(start_node); 
-		cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_node]);
+		if (the_graph->nodeExists(start_node) == false)
+		{
+			cout << start_loc << " is an invalid starting location. " << endl; 
+		}
+		else if (the_graph->nodeExists(end_node) == false)
+		{
+			cout << end_loc << " is an invalid destination." << endl;
+		}
+		else
+		{
+			unordered_map<string, int> shortest_paths{};
+			shortest_paths = the_graph->computeShortestPath(start_node);
+			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_node]);
+		}
 		return; 
 	}
 
@@ -95,6 +104,7 @@ public:
 		return result.str(); 
 	}
 
+	/* MIGHT BE USEFUL FOR WRITING TO/FROM SHORTEST PATH FILE, BUT USELESS FOR NOW
 	// Takes a CampusGraph that was previously created. Calculates how long it 
 	// takes to go from start to all other nodes.
 	static void calculatePath(CampusGraph* the_graph, string start, string end)
@@ -103,6 +113,7 @@ public:
 		unordered_map<string, int> shortest_paths{};
 		shortest_paths = the_graph->computeShortestPath(start);
 	}
+	*/
 };
 
 #endif // !TASKS_H
