@@ -66,6 +66,8 @@ public:
 		}
 	}
 
+	// TO DO: implement pushing nodes onto each node's private path variable
+
 	// Dijkstra's shortest path algorithm.
 	// See lecture notes for visualization.
 	// destination, time it takes to get there		// where we start on map

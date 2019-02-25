@@ -21,6 +21,12 @@ protected:
     //Value of HT is another node in our graph
     unordered_map<GraphNode<Key, Value>*, int> _vertices;
 
+	// contains the path taken to get to this node from other
+	// nodes (with the understanding that this program will only
+	// run once, but having a data structure for this would allow 
+	// the program to become repeatable in the future)
+	unordered_map <GraphNode<Key, Value>*, vector<GraphNode<Key, Value>*> _paths; 
+
 public:
 
     GraphNode(const Key &k, const Value &v)
