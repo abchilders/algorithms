@@ -86,6 +86,7 @@ public:
 
 			// prime the PQ with starting location
 			to_visit.push(make_pair(_graph[start], 0));
+			//_graph[start]->addPathNode(_graph[start], _graph[start]); 
 
 			while (to_visit.empty() == false)
 			{
@@ -103,6 +104,10 @@ public:
 					// so mark as visited in our distances map
 					distances[key] = weight;
 
+					// the shortest path to key has been found, so insert it 
+					// at the end of its own path
+					top.first->addPathNode(_graph[start], top.first); 
+
 					// push all unknown outgoing edges into PQ
 					for (auto edge : top.first->getEdges())
 					{
@@ -113,7 +118,9 @@ public:
 						// is that node already in distances?
 						if (distances.find(node->getKey()) == distances.end())
 						{
-							// if not, push it in, accumulating distance
+							// if not, add its "parent node" to its path 
+							// and push it in, accumulating distance
+							node->addPathNode(_graph[start], top.first); 
 							to_visit.push(make_pair(node, weight + edge.second));
 						}
 					}
@@ -154,6 +161,12 @@ public:
 	string getBuildingNodeName(string abbr)
 	{
 		return _building_codes[abbr].second; 
+	}
+
+	// returns a pointer to the node that a building belongs to
+	StringGraphNode* getBuildingNode(string abbr)
+	{
+		return _graph[_building_codes[abbr].second]; 
 	}
 };
 

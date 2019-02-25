@@ -25,7 +25,7 @@ protected:
 	// nodes (with the understanding that this program will only
 	// run once, but having a data structure for this would allow 
 	// the program to become repeatable in the future)
-	unordered_map <GraphNode<Key, Value>*, vector<GraphNode<Key, Value>*> _paths; 
+	unordered_map<GraphNode<Key, Value>*, vector<GraphNode<Key, Value>*>> _paths; 
 
 public:
 
@@ -78,6 +78,25 @@ public:
     {
        return _vertices;
     }
+
+	// adds a node to _paths with start as the key
+	void addPathNode(GraphNode<Key, Value>* start, GraphNode<Key, Value>* next_step)
+	{
+		_paths[start].push_back(next_step); 
+	}
+
+	void outputPartialPath(ostream &out_stream, GraphNode* start, string delimiter = "")
+	{
+		bool first_item = true; 
+		for (int i = 1; i < _paths[start].size - 1; i++)
+		{
+			if (first_item == false)
+			{
+				out_stream << delimiter; 
+			}
+			out_stream << _paths[start][i]->getKey(); 
+		}
+	}
 
 };
 

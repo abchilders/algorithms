@@ -77,21 +77,27 @@ public:
 		cin >> end_loc;
 
 		// calculate time to get to all other nodes from start_loc
-		string start_node = the_graph->getBuildingNodeName(start_loc); 
-		string end_node = the_graph->getBuildingNodeName(end_loc); 
-		if (the_graph->nodeExists(start_node) == false)
+		string start_name = the_graph->getBuildingNodeName(start_loc); 
+		string end_name = the_graph->getBuildingNodeName(end_loc); 
+		if (the_graph->nodeExists(start_name) == false)
 		{
 			cout << start_loc << " is an invalid starting location. " << endl; 
 		}
-		else if (the_graph->nodeExists(end_node) == false)
+		else if (the_graph->nodeExists(end_name) == false)
 		{
 			cout << end_loc << " is an invalid destination." << endl;
 		}
 		else
 		{
 			unordered_map<string, int> shortest_paths{};
-			shortest_paths = the_graph->computeShortestPath(start_node);
-			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_node]);
+			shortest_paths = the_graph->computeShortestPath(start_name);
+			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_name]);
+			cout << "On your way from " << the_graph->getBuildingName(start_loc)
+				<< " to " << the_graph->getBuildingName(end_loc)
+				<< ", you will pass by: "; 
+
+			// get the path from the end node
+			// FINISH NEXT TIME
 		}
 		return; 
 	}
