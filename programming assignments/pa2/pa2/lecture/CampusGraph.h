@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <string>
 #include <queue>
+#include <iostream>
 using namespace std;
 
 // may have to rewrite this for Tier 2
@@ -96,6 +97,11 @@ public:
 				int weight = top.second;
 				to_visit.pop();
 
+				if (key == "Music A")
+				{
+					cout << "BREAKPOINT" << endl; 
+				}
+
 				// have we seen this node yet, in the distances{} map? 
 				// first = node, which has key
 				if (distances.find(key) == distances.end())
@@ -118,9 +124,12 @@ public:
 						// is that node already in distances?
 						if (distances.find(node->getKey()) == distances.end())
 						{
-							// if not, add its "parent node" to its path 
+							// if not, add its "parent nodes" to its path 
 							// and push it in, accumulating distance
-							node->addPathNode(_graph[start], top.first); 
+							for (auto step : top.first->getPath(_graph[start]))
+							{
+								node->addPathNode(_graph[start], step); 
+							}
 							to_visit.push(make_pair(node, weight + edge.second));
 						}
 					}

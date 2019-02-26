@@ -85,10 +85,15 @@ public:
 		_paths[start].push_back(next_step); 
 	}
 
+	vector<GraphNode<Key, Value>*> getPath(GraphNode<Key, Value>* start_node)
+	{
+		return _paths[start_node];
+	}
+
 	void outputPartialPath(ostream &out_stream, GraphNode* start, string delimiter = "")
 	{
 		bool first_item = true; 
-		for (int i = 1; i < _paths[start].size - 1; i++)
+		for (int i = 1; i < _paths[start].size() - 1; i++)
 		{
 			if (first_item == false)
 			{
