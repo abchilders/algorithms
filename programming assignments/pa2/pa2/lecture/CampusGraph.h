@@ -9,19 +9,21 @@
 #define GRAPH_H
 
 #include "StringGraphNode.h"
+#include "Path.h"
 #include <unordered_map>
 #include <string>
 #include <queue>
 #include <iostream>
+#include <tuple>
 using namespace std;
 
 // may have to rewrite this for Tier 2
-class PairComparer
+class TupleComparer
 {
 public:				// what PQ operates on
-   bool operator()(pair<StringGraphNode*, int> first, pair<StringGraphNode*, int> second)
+   bool operator()(tuple<StringGraphNode*, int, vector<string>> first, tuple<StringGraphNode*, int, vector<string>> second)
    {
-      return first.second > second.second;
+      return get<1>(first) > get<1>(second);
    }
 };
 
@@ -72,50 +74,47 @@ public:
 	// Dijkstra's shortest path algorithm.
 	// See lecture notes for visualization.
 	// destination, time it takes to get there		// where we start on map
-	unordered_map<string, int> computeShortestPath(const string& start)
+	unordered_map<string, Path<string>> computeShortestPath(const string& start)
 	{
 		// will return this 
-		unordered_map<string, int> distances{};
+		unordered_map<string, Path<string>> distances{};
 
 		// make sure we received a valid starting point
 		if (_graph.find(start) != _graph.end()) // if we found the starting point 
 		{
 			// pointer, distance
-			priority_queue<pair<StringGraphNode*, int>, // what's in the PQ
-				vector<pair<StringGraphNode*, int>>, // how we store these pairs
-				PairComparer> to_visit{};  // how we compare each pair
+			priority_queue<tuple<StringGraphNode*, int, vector<string>>, // what's in the PQ
+				vector<tuple<StringGraphNode*, int, vector<string>>>, // how we store these tuples
+				TupleComparer> to_visit{};  // how we compare each tuples
 
 			// prime the PQ with starting location
-			to_visit.push(make_pair(_graph[start], 0));
+			to_visit.push(make_tuple(_graph[start], 0, vector<string>{}));
 			//_graph[start]->addPathNode(_graph[start], _graph[start]); 
 
 			while (to_visit.empty() == false)
 			{
 				// get item on top of PQ
 				auto top = to_visit.top();
-				string key = top.first->getKey();
-				int weight = top.second;
+				string key = get<0>(top)->getKey();
+				int weight = get<1>(top);
+				vector<string> path = get<2>(top); 
 				to_visit.pop();
-
-				if (key == "Music A")
-				{
-					cout << "BREAKPOINT" << endl; 
-				}
 
 				// have we seen this node yet, in the distances{} map? 
 				// first = node, which has key
 				if (distances.find(key) == distances.end())
 				{
+					// the shortest path to key has been found, so insert it 
+					// at the end of its path 
+					path.push_back(key);
+
 					// if we get to the end, we have NOT seen the key
 					// so mark as visited in our distances map
-					distances[key] = weight;
-
-					// the shortest path to key has been found, so insert it 
-					// at the end of its own path
-					top.first->addPathNode(_graph[start], top.first); 
+					distances[key].setWeight(weight); 
+					distances[key].setPath(path);  
 
 					// push all unknown outgoing edges into PQ
-					for (auto edge : top.first->getEdges())
+					for (auto edge : get<0>(top)->getEdges())
 					{
 						// need to dynamically cast from generic graph node 
 						// into string graph nodes
@@ -124,13 +123,8 @@ public:
 						// is that node already in distances?
 						if (distances.find(node->getKey()) == distances.end())
 						{
-							// if not, add its "parent nodes" to its path 
-							// and push it in, accumulating distance
-							for (auto step : top.first->getPath(_graph[start]))
-							{
-								node->addPathNode(_graph[start], step); 
-							}
-							to_visit.push(make_pair(node, weight + edge.second));
+							// if not, push it in, accumulating distance & path
+							to_visit.push(make_tuple(node, weight + edge.second, path));
 						}
 					}
 				}

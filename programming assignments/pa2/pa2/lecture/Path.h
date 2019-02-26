@@ -6,14 +6,46 @@ template<typename T>
 class Path
 {
 private:
+	// contains the weight of the path
+	int _weight = 0; 
 	// contains a list of things representing a path
 	vector<T> _path{}; 
-public:
-	// outputs the entire path
-	void outputFullPath(ostream &out_stream);
+public: 
+	Path()
+	{
+		// intentionally empty
+	}
 
-	// outputs the path, without the first and last elements
-	void outputPartialPath(ostream &out_stream); 
+	Path(int the_weight, vector<string> the_path)
+	{
+		_weight = the_weight; 
+		_path = the_path; 
+	}
+
+	void setWeight(const int new_weight)
+	{
+		_weight = new_weight; 
+	}
+
+	int getWeight()
+	{
+		return _weight; 
+	}
+
+	void setPath(const vector<T> new_path)
+	{
+		_path = new_path; 
+	}
+
+	vector<T> getPath()
+	{
+		return _path; 
+	}
+
+	void addToPath(const T step)
+	{
+		_path.push_back(step); 
+	}
 };
 
 #endif //!PATH_H

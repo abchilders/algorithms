@@ -89,18 +89,32 @@ public:
 		}
 		else
 		{
-			unordered_map<string, int> shortest_paths{};
+			unordered_map<string, Path<string>> shortest_paths{};
 			shortest_paths = the_graph->computeShortestPath(start_name);
-			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_name]) << endl; 
+			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_name].getWeight()) << endl; 
 			cout << "On your way from " << the_graph->getBuildingName(start_loc)
 				<< " to " << the_graph->getBuildingName(end_loc)
 				<< ", you will pass by: "; 
 
+			// for the purpose of separating buildings in the path
+			bool needs_comma = false; 
+			vector<string> path = shortest_paths[end_name].getPath(); 
+			for (int i = 1; i < path.size() - 1; i++)
+			{
+				if (needs_comma == true)
+				{
+					cout << ", ";
+				}
+				cout << path[i];
+				needs_comma = true; 
+			}
+			cout << endl; 
+
 			// get the path from the end node
-			StringGraphNode* start_node = the_graph->getBuildingNode(start_loc); 
+			/*StringGraphNode* start_node = the_graph->getBuildingNode(start_loc); 
 			StringGraphNode* end_node = the_graph->getBuildingNode(end_loc); 
 			end_node->outputPartialPath(cout, start_node, ", "); 
-			cout << endl; 
+			cout << endl; */
 		}
 		return; 
 	}
