@@ -40,9 +40,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data.csv">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="distances.csv">
       <Filter>Resource Files</Filter>
     </None>

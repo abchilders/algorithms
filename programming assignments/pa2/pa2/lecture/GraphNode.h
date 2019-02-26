@@ -21,12 +21,6 @@ protected:
     //Value of HT is another node in our graph
     unordered_map<GraphNode<Key, Value>*, int> _vertices;
 
-	// contains the path taken to get to this node from other
-	// nodes (with the understanding that this program will only
-	// run once, but having a data structure for this would allow 
-	// the program to become repeatable in the future)
-	unordered_map<GraphNode<Key, Value>*, vector<GraphNode<Key, Value>*>> _paths; 
-
 public:
 
     GraphNode(const Key &k, const Value &v)
@@ -78,31 +72,6 @@ public:
     {
        return _vertices;
     }
-
-	// adds a node to _paths with start as the key
-	void addPathNode(GraphNode<Key, Value>* start, GraphNode<Key, Value>* next_step)
-	{
-		_paths[start].push_back(next_step); 
-	}
-
-	vector<GraphNode<Key, Value>*> getPath(GraphNode<Key, Value>* start_node)
-	{
-		return _paths[start_node];
-	}
-
-	void outputPartialPath(ostream &out_stream, GraphNode* start, string delimiter = "")
-	{
-		bool first_item = true; 
-		for (int i = 1; i < _paths[start].size() - 1; i++)
-		{
-			if (first_item == false)
-			{
-				out_stream << delimiter; 
-			}
-			out_stream << _paths[start][i]->getKey(); 
-		}
-	}
-
 };
 
 template <typename Key, typename Value>

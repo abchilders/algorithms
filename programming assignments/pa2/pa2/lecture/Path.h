@@ -6,10 +6,12 @@ template<typename T>
 class Path
 {
 private:
-	// contains the weight of the path
+	// the weight of the path
 	int _weight = 0; 
-	// contains a list of things representing a path
+
+	// a list of things representing a path
 	vector<T> _path{}; 
+
 public: 
 	Path()
 	{
@@ -42,6 +44,7 @@ public:
 		return _path; 
 	}
 
+	// to be used in a better implementation of CampusGraph::computeShortestPath
 	void addToPath(const T step)
 	{
 		_path.push_back(step); 

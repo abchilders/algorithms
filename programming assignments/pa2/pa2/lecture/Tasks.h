@@ -7,8 +7,17 @@
 
 class Tasks
 {
+private:
+	// converts a number of seconds to a string representing minutes and seconds
+	static string convertToMinutes(int seconds)
+	{
+		ostringstream result{};
+		result << (seconds / 60) << " minutes and " << (seconds % 60) << " seconds";
+		return result.str();
+	}
+
 public:
-	// Takes a vector of CSV data representing time between campus buildings.
+
 	// Creates a campus graph with the given data. 
 	static CampusGraph* createGraph(
 		const vector<vector<string>>& campus_data, 
@@ -26,7 +35,7 @@ public:
 			node_mapping[node_aliases[0]] = node_aliases[1];
 		}
 
-		// now, using this HT, start building the graph
+		// using node_mapping, start building the graph
 		CampusGraph* the_graph = new CampusGraph{};
 
 		// for each row in the given distance data
@@ -48,7 +57,9 @@ public:
 				the_graph->addVertex(end);
 			}
 			
-			// connect unidirectionally
+			// connect unidirectionally, because I figure that weights may be affected
+			// by whether one is going up or down a hill, for instance - may cause 
+			// inaccuracies, depending on gaps in knowledge from our graph as collected 
 			the_graph->connectVertex(start, end, weight); 
 		}
 
@@ -63,7 +74,7 @@ public:
 	}
 
 	// Interfaces with user. Gets start and end locations; prints the amount of time
-	// it takes to travel between those locations to the screen. 
+	// it takes to travel between those locations to the screen & the path to and from.
 	static void userInterface(CampusGraph* the_graph)
 	{
 		// get user input
@@ -73,10 +84,12 @@ public:
 		cout << "**HSU Transit Time Calculator**" << endl;
 		cout << "Enter starting location: ";
 		cin >> start_loc; 
+		transform(start_loc.begin(), start_loc.end(), start_loc.begin(), ::toupper); 
 		cout << "Enter destination: ";
 		cin >> end_loc;
+		transform(end_loc.begin(), end_loc.end(), end_loc.begin(), ::toupper); 
 
-		// calculate time to get to all other nodes from start_loc
+		// validate user input
 		string start_name = the_graph->getBuildingNodeName(start_loc); 
 		string end_name = the_graph->getBuildingNodeName(end_loc); 
 		if (the_graph->nodeExists(start_name) == false)
@@ -89,54 +102,43 @@ public:
 		}
 		else
 		{
+			// if user input is valid, calculate time to get to all other nodes from start_loc
 			unordered_map<string, Path<string>> shortest_paths{};
 			shortest_paths = the_graph->computeShortestPath(start_name);
+
+			// output estimated travel time
 			cout << "Estimated travel time: " << convertToMinutes(shortest_paths[end_name].getWeight()) << endl; 
 			cout << "On your way from " << the_graph->getBuildingName(start_loc)
 				<< " to " << the_graph->getBuildingName(end_loc)
 				<< ", you will pass by: "; 
 
-			// for the purpose of separating buildings in the path
-			bool needs_comma = false; 
+			// output path from start to end
 			vector<string> path = shortest_paths[end_name].getPath(); 
-			for (int i = 1; i < path.size() - 1; i++)
-			{
-				if (needs_comma == true)
-				{
-					cout << ", ";
-				}
-				cout << path[i];
-				needs_comma = true; 
-			}
-			cout << endl; 
 
-			// get the path from the end node
-			/*StringGraphNode* start_node = the_graph->getBuildingNode(start_loc); 
-			StringGraphNode* end_node = the_graph->getBuildingNode(end_loc); 
-			end_node->outputPartialPath(cout, start_node, ", "); 
-			cout << endl; */
+			if (path.size() < 3)
+			{
+				// the path only consists of the start point and the end point at most
+				cout << "no other buildings" << endl; 
+			}
+			else
+			{
+				bool needs_comma = false;
+
+				// the path has at least one intermediate building between start and end
+				for (int i = 1; i < path.size() - 1; i++)
+				{
+					if (needs_comma == true)
+					{
+						cout << ", ";
+					}
+					cout << path[i];
+					needs_comma = true;
+				}
+				cout << endl;
+			}
 		}
 		return; 
 	}
-
-	// converts a number of seconds to a string representing minutes and seconds
-	static string convertToMinutes(int seconds)
-	{
-		ostringstream result{};
-		result << (seconds / 60) << " minutes and " << (seconds % 60) << " seconds";
-		return result.str(); 
-	}
-
-	/* MIGHT BE USEFUL FOR WRITING TO/FROM SHORTEST PATH FILE, BUT USELESS FOR NOW
-	// Takes a CampusGraph that was previously created. Calculates how long it 
-	// takes to go from start to all other nodes.
-	static void calculatePath(CampusGraph* the_graph, string start, string end)
-	{
-		// compute the shortest path using Dijkstra's algorithm
-		unordered_map<string, int> shortest_paths{};
-		shortest_paths = the_graph->computeShortestPath(start);
-	}
-	*/
 };
 
 #endif // !TASKS_H

@@ -1,4 +1,4 @@
-// Abstraction of GraphNode, because we're dealing with strings
+
 
 #ifndef STRING_GRAPH_NODE_H
 #define STRING_GRAPH_NODE_H
@@ -7,6 +7,7 @@
 #include <string>
 using namespace std;
 
+// Abstraction of GraphNode, because CampusGraph deals with strings.
 class StringGraphNode : public GraphNode<string, string>
 {
 public:

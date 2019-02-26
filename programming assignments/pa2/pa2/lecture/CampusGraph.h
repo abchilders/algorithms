@@ -1,9 +1,3 @@
-// For 2nd tier: you need to know not just node and weight,
-// but entire path.
-// Could push on node into a member variable called vector, and then weight = 
-// sum of all nodes. 
-// Adam made a separate path class to contain the path. 
-
 #pragma once
 #ifndef GRAPH_H
 #define GRAPH_H
@@ -13,11 +7,10 @@
 #include <unordered_map>
 #include <string>
 #include <queue>
-#include <iostream>
 #include <tuple>
+
 using namespace std;
 
-// may have to rewrite this for Tier 2
 class TupleComparer
 {
 public:				// what PQ operates on
@@ -27,8 +20,6 @@ public:				// what PQ operates on
    }
 };
 
-// manages nodes in campus graph
-// will represent graph with unordered_map
 class CampusGraph
 {
 private:
@@ -42,9 +33,9 @@ private:
 	unordered_map<string, pair<string, string>> _building_codes;
 
 public:
+	// adds an item to our graph
 	void addVertex(const string& key)
 	{
-		// adds an item to our graph
 		_graph[key] = new StringGraphNode(key);
 	}
 
@@ -69,10 +60,10 @@ public:
 		}
 	}
 
-	// TO DO: implement pushing nodes onto each node's private path variable
-
 	// Dijkstra's shortest path algorithm.
-	// See lecture notes for visualization.
+	/* Could be improved by filling the PQ with pair<StringGraphNode*, Path<string>>
+		 instead of manually accumulating weight & path, then putting them into 
+		Path object at the end. */
 	// destination, time it takes to get there		// where we start on map
 	unordered_map<string, Path<string>> computeShortestPath(const string& start)
 	{
@@ -89,7 +80,6 @@ public:
 
 			// prime the PQ with starting location
 			to_visit.push(make_tuple(_graph[start], 0, vector<string>{}));
-			//_graph[start]->addPathNode(_graph[start], _graph[start]); 
 
 			while (to_visit.empty() == false)
 			{
@@ -101,15 +91,13 @@ public:
 				to_visit.pop();
 
 				// have we seen this node yet, in the distances{} map? 
-				// first = node, which has key
 				if (distances.find(key) == distances.end())
 				{
-					// the shortest path to key has been found, so insert it 
-					// at the end of its path 
+					// if not, the shortest path to key has been found, so insert 
+					// it at the end of its path 
 					path.push_back(key);
 
-					// if we get to the end, we have NOT seen the key
-					// so mark as visited in our distances map
+					// mark as visited in our distances map
 					distances[key].setWeight(weight); 
 					distances[key].setPath(path);  
 
@@ -134,7 +122,7 @@ public:
 		return distances;
 	}
 
-	// Returns true if a node with the name node_name exists in the graph.
+	// returns true if a node with the name node_name exists in the graph
 	bool nodeExists(string node_name)
 	{
 		if (_graph[node_name] == nullptr)
@@ -164,12 +152,6 @@ public:
 	string getBuildingNodeName(string abbr)
 	{
 		return _building_codes[abbr].second; 
-	}
-
-	// returns a pointer to the node that a building belongs to
-	StringGraphNode* getBuildingNode(string abbr)
-	{
-		return _graph[_building_codes[abbr].second]; 
 	}
 };
 
