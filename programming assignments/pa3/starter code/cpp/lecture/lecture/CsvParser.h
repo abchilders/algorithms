@@ -1,18 +1,3 @@
-/*
-Assignment: PA #2 - Dijkstra's algorithm
-Description: This program will use CSV information on campus walking times
-	to prompt the user for two campus location codes and calculate the
-	estimated shortest travel time using Dijkstra's algorithm, as well as
-	outputting what buildings one will pass on the way.
-Author: Alex Childers
-HSU ID: 013145324
-Completion time: 12.75 hours
-In completing this program, I received help from the following people:
-	N/A
-*/
-
-// Provided by Adam Carter. 
-
 #pragma once
 #ifndef CSV_PARSER_H
 #define CSV_PARSER_H
