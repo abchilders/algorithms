@@ -7,7 +7,7 @@ Description: Given a file containing a map of the city (where each line contains
 	to deliver packages to all requested houses. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 15:15 - 
+Completion time: 2.5 
 In completing this program, I received help from the following people:
 	N/A
 */

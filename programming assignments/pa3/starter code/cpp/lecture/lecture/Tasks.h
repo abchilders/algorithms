@@ -16,7 +16,8 @@ class Tasks
 {
 private:
 	// contains our overall graph 
-	CityGraph the_graph{}; 
+	CityGraph _city_graph{}; 
+	vector<string> _deliveries{}; 
 
 public: 
 	// interfaces with user to get user input and output results 
@@ -33,8 +34,13 @@ public:
 
 		// create full city graph 
 		createGraph(city_map_file);
-		
 
+		// record deliveries
+		parseDeliveries(dest_file); 
+
+		// Task 2: reduce the graph using Dijkstra's algorithm, then create an MST 
+		// on that reduced graph 
+		
 		// output results
 		string transit_time = "";
 		cout << "Total transit time: " << transit_time << endl;
@@ -55,18 +61,37 @@ public:
 			int weight = stoi(edge_info[2]);
 
 			// add the houses to the graph if they don't already exist
-			if (the_graph.nodeExists(first_house) == false)
+			if (_city_graph.nodeExists(first_house) == false)
 			{
-				the_graph.addVertex(first_house); 
+				_city_graph.addVertex(first_house); 
 			}
-			if (the_graph.nodeExists(second_house) == false)
+			if (_city_graph.nodeExists(second_house) == false)
 			{
-				the_graph.addVertex(second_house); 
+				_city_graph.addVertex(second_house); 
 			}
 
 			// connect bidirectionally 
-			the_graph.connectVertex(first_house, second_house, weight, true); 
+			_city_graph.connectVertex(first_house, second_house, weight, true); 
 		}
+	}
+
+	// reads a list of houses to deliver to from a file
+	void parseDeliveries(string delivery_file)
+	{
+		ifstream dest_stream{delivery_file}; 
+		string next_house = ""; 
+
+		// read in deliveries
+		if (dest_stream.is_open() == true)
+		{
+			while (dest_stream.good() == true)
+			{
+				dest_stream >> next_house;
+				_deliveries.push_back(next_house); 
+			}
+		}
+		dest_stream.close(); 
+		
 	}
 };
 
