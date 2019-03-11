@@ -17,7 +17,11 @@ class Tasks
 private:
 	// contains our overall graph 
 	CityGraph _city_graph{}; 
-	vector<string> _deliveries{}; 
+
+	// contains a list of the nodes we want to deliver to- the int will
+	// default to 1 to indicate that a node exists in this list (will be
+	// useful when reducing the graph for Tier 2) 
+	unordered_map<string, int> _deliveries{}; 
 
 public: 
 	// interfaces with user to get user input and output results 
@@ -33,21 +37,28 @@ public:
 		getline(cin, dest_file);
 
 		// create full city graph 
-		createGraph(city_map_file);
+		createFullGraph(city_map_file);
 
 		// record deliveries
 		parseDeliveries(dest_file); 
 
-		// Task 2: reduce the graph using Dijkstra's algorithm, then create an MST 
+		// Tier 2: reduce the graph using Dijkstra's algorithm, then create an MST 
 		// on that reduced graph 
+		vector<Edge> reduced_map = createReducedMst(); 
+
+		// calculate the total transit time on this MST
+		int transit_time = 0; 
+		for (auto edge : reduced_map)
+		{
+			transit_time += edge.weight; 
+		}
 		
 		// output results
-		string transit_time = "";
-		cout << "Total transit time: " << transit_time << endl;
+		cout << "Total transit time: " << transit_time << " minutes" << endl;
 	}
 
 	// uses a CSV map file to create a CityGraph
-	void createGraph(string map_file)
+	void createFullGraph(string map_file)
 	{
 		// parse CSV map_file
 		CsvStateMachine map_csm{ map_file };
@@ -60,19 +71,26 @@ public:
 			string second_house = edge_info[1];
 			int weight = stoi(edge_info[2]);
 
-			// add the houses to the graph if they don't already exist
-			if (_city_graph.nodeExists(first_house) == false)
-			{
-				_city_graph.addVertex(first_house); 
-			}
-			if (_city_graph.nodeExists(second_house) == false)
-			{
-				_city_graph.addVertex(second_house); 
-			}
-
-			// connect bidirectionally 
-			_city_graph.connectVertex(first_house, second_house, weight, true); 
+			// add this edge to the graph 
+			addEdge(first_house, second_house, weight, _city_graph); 
 		}
+	}
+
+	// adds an edge to the graph 
+	void addEdge(string source, string sink, int weight, CityGraph& graph)
+	{
+		// add the houses to the graph if they don't already exist
+		if (graph.nodeExists(source) == false)
+		{
+			graph.addVertex(source);
+		}
+		if (graph.nodeExists(sink) == false)
+		{
+			graph.addVertex(sink);
+		}
+
+		// connect bidirectionally 
+		graph.connectVertex(source, sink, weight, true);
 	}
 
 	// reads a list of houses to deliver to from a file
@@ -87,11 +105,49 @@ public:
 			while (dest_stream.good() == true)
 			{
 				dest_stream >> next_house;
-				_deliveries.push_back(next_house); 
+				_deliveries[next_house] = 1; 
 			}
 		}
 		dest_stream.close(); 
 		
+	}
+
+	// reduces _city_graph so that it only contains the vertices in 
+	// _deliveries, with edge weights derived from Dijkstra's algorithm.
+	// returns the MST of this reduced graph.
+	vector<Edge> createReducedMst()
+	{
+		unordered_map<string, unordered_map<string, int>> shortest_paths{}; 
+		CityGraph reduced_graph{}; 
+
+		// compute shortest paths on each destination node, creating our reduced
+		// graph as we go
+		for (auto house : _deliveries)
+		{
+			// i didn't want to use unordered_map::find because of the potentially linear
+			// runtime, so this is my attempt to check if something exists in the HT
+			if (house.second == 1)
+			{
+				string start = house.first;
+				shortest_paths[start] = _city_graph.computeShortestPath(house.first);
+
+				// for each sink that we've found a shortest path to on the current house
+				for (auto dest : shortest_paths[start])
+				{
+					string end = dest.first;
+
+					// if the end/sink is one of our destination nodes
+					if (_deliveries[end] == 1)
+					{
+						// add it to the graph
+						addEdge(start, end, shortest_paths[start][end], reduced_graph);
+					}
+				}
+			}
+		}
+
+		// build an MST on this graph and return the result
+		return reduced_graph.computeMinimumSpanningTree(shortest_paths.begin()->first);
 	}
 };
 
