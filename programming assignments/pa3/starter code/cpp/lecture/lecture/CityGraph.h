@@ -23,6 +23,8 @@ class CityGraph
 private:
 	unordered_map<string, StringGraphNode*> _graph;
 
+	unordered_map<string, unordered_map<string, int>> _shortest_paths{}; 
+
 public:
 	void addVertex(const string& key)
 	{
@@ -143,6 +145,7 @@ public:
 				}
 			}
 		}
+		_shortest_paths[start] = distances; 
 		return distances;
 	}
 
@@ -156,6 +159,21 @@ public:
 		else
 		{
 			return true;
+		}
+	}
+
+	// returns a HT of shortest paths to other nodes from start
+	unordered_map<string, int> getShortestPaths(const string& start)
+	{
+		// if the shortest distance HT has already been calculated, return it
+		if (_shortest_paths.find(start) != _shortest_paths.end())
+		{
+			return _shortest_paths[start]; 
+		}
+		// else, calculate it and then return it
+		else
+		{
+			return computeShortestPath(start); 
 		}
 	}
 };
