@@ -1,16 +1,25 @@
+/*
+Assignment: PA #3 - Minimum Spanning Tree
+Description: Given a file containing a map of the city (where each line contains a
+	source, sink, and weight all representing an edge), and a file containing
+	a list of houses that will receive deliveries for the next day, this program
+	uses a minimum spanning tree to compute the mimimum amount of time required
+	to deliver packages to all requested houses.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 10 hours
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// This file is written by Alex. 
+
 #ifndef TASKS_H
 #define TASKS_H
 
 #include "CityGraph.h"
 #include "CsvParser.h"
 #include <iostream>
-
-/* Assignment tasks:
-- load in and create the graph 
-- construct an MST on that graph
-- output the total cost of that route
-	- ASK: "route plus the accepted edges"-- what does this mean? 
-*/
 
 class Tasks
 {
@@ -22,8 +31,8 @@ private:
 	CityGraph _reduced_graph{}; 
 
 	// contains a list of the nodes we want to deliver to- the int will
-	// default to 1 to indicate that a node exists in this list (will be
-	// useful when reducing the graph for Tier 2) 
+	// default to 1 to indicate that a node exists in this list (useful
+	// when reducing the graph for Tier 2) 
 	unordered_map<string, int> _deliveries{}; 
 
 public: 
@@ -47,24 +56,16 @@ public:
 
 		// Tier 2: reduce the graph using Dijkstra's algorithm, then create an MST 
 		// on that reduced graph 
-		vector<Edge> reduced_map = createReducedMst(); 
+		vector<Edge> reduced_map = createReducedMst();  
 
-		// Tier 3: calculate a route on our reduced graph 
-		string path = calculateMstRoute(reduced_map); 
-
-		// Tier 2/3: calculate the total transit time on this MST
+		// calculate the total transit time on this MST
 		int transit_time = 0; 
 		for (auto edge : reduced_map)
 		{
 			transit_time += edge.weight; 
 		}
-
-		// for all nodes involved in 3+ edges, calculate the paths to each dead
-		// end. stop calculating if you run into another node with 3+ edges along
-		// the way; that node can calculate the distances to the rest of the dead 
-		// ends
 		
-		// Tier 2: output results
+		// output results
 		cout << "Total transit time: " << transit_time << " minutes" << endl;
 	}
 
@@ -158,68 +159,6 @@ public:
 
 		// build an MST on this graph and return the result
 		return _reduced_graph.computeMinimumSpanningTree(shortest_paths.begin()->first);
-	}
-
-	string calculateMstRoute(vector<Edge> mst)
-	{
-		// assumption: the MST has at least two nodes that are involved in exactly
-		// one edge (because if there were less than two nodes at "dead ends" in the 
-		// route, that implies that the tree is NOT a truly "minimum" spanning tree
-
-		// how many times is each node involved in an edge? (if there is only one 
-		// possible route, each node will be involved no more than two times) 
-		unordered_map<StringGraphNode*, int> edge_freq{};
-		for (auto edge : mst)
-		{
-			edge_freq[edge.sink]++;
-			edge_freq[edge.source]++;
-		}
-
-		// convert into a reverse-frequency distribution (where the number of edges
-		// attached to a node is called its "degree"), contains lists of nodes
-		// sorted by their degree value 
-		unordered_map<int, vector<StringGraphNode*>> degrees{}; 
-		for (auto freq : edge_freq)
-		{
-			StringGraphNode* node = freq.first; 
-			int node_freq = freq.second; 
-			degrees[node_freq].push_back(node); 
-		}
-
-		// use a modified version of Dijkstra's algorithm that allows path-finding,
-		// starting from all dead-end nodes until we find a solution 
-		for (auto dead_end : degrees[1])
-		{
-			_reduced_graph.findFullPath(dead_end->getValue()); 
-		}
-
-		return ""; 
-
-		/*
-		// for all nodes with degree 3+, we want to find out: the paths to
-		// which 2 dead ends cost the most? 
-
-		// it's safe to assign these default values because if we have an MST
-		// with at least 2 nodes, there must then be at least 2 nodes with degree 1 
-		string costliest_node = degrees[1][0]->getKey(); 
-		string second_costliest_node = degrees[1][1]->getKey(); 
-		for (int i = edge_freq.size() - 1; i > 2; i--)
-		{
-			// if there exist nodes with i degrees 
-			if (degrees[i].size() > 0)
-			{
-				// for each of these nodes, find the cost to get to all dead ends
-				// (nodes with degree 1) 
-				for (auto node : degrees[i])
-				{
-					unordered_map<string, int> paths = _reduced_graph.getShortestPaths[node->getValue()];
-					for (auto dead_end : degrees[1])
-					{
-						if (paths[dead_end] > ) STOPPED HERE
-					}
-				}
-			}
-		}*/
 	}
 };
 
