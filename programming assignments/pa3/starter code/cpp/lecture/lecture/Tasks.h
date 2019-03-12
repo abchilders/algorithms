@@ -186,6 +186,16 @@ public:
 			degrees[node_freq].push_back(node); 
 		}
 
+		// use a modified version of Dijkstra's algorithm that allows path-finding,
+		// starting from all dead-end nodes until we find a solution 
+		for (auto dead_end : degrees[1])
+		{
+			_reduced_graph.findFullPath(dead_end->getValue()); 
+		}
+
+		return ""; 
+
+		/*
 		// for all nodes with degree 3+, we want to find out: the paths to
 		// which 2 dead ends cost the most? 
 
@@ -209,7 +219,7 @@ public:
 					}
 				}
 			}
-		}
+		}*/
 	}
 };
 

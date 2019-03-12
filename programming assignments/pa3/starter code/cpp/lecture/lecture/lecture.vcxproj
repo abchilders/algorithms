@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClInclude Include="CityGraph.h" />
     <ClInclude Include="Edge.h" />
+    <ClInclude Include="Path.h" />
     <ClInclude Include="StringGraphNode.h" />
     <ClInclude Include="CsvParser.h" />
     <ClInclude Include="GraphNode.h" />
