@@ -1,3 +1,15 @@
+/*
+Assignment: PA #4
+Description: This program builds a decision tree based on a supplied CSV file. 
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 0.5 hours
+In completing this program, I received help from the following people: 
+	N/A
+*/
+
+
+
 #include <iostream>
 #include <unordered_map>
 #include <cmath>
@@ -10,7 +22,8 @@ using namespace std;
 // advice: bottom-up programming is useful
 // start from what you know (invariants) and write smaller, good-quality
 // functions based on these, then combine them
-//	^ test-driven development: you write a test before you write code to test the truthfulness
+//	^ test-driven development: you write a test before you write code to test 
+	// the truthfulness
 //	of what you've coded
 // I.E. start small and work your way up to create more reliable programs 
 
@@ -85,7 +98,8 @@ vector<vector<string>> reduceMatrix(
 
 // HEY!!! THIS IS WRONG. DIFF IT ON ADAM'S BEFORE PROCEEDING 
 // returns which column gave us the most gain 
-int findMaxGain(const vector<vector<string>>& matrix, 
+int findMaxGain(
+	const vector<vector<string>>& matrix, 
 	int outcome_column, 
 	double entropy)
 {
@@ -118,8 +132,8 @@ int findMaxGain(const vector<vector<string>>& matrix,
 
 			// reduce observations on a certain outcome 
 			auto reduced_observations = getObservations(reduced_matrix, outcome_column); 
-			local_entropy += (double)level.second / observations.size()
-				* calculateEntropy((buildFrequencyDistribution(reduced_observations)));
+			local_entropy += ((double)level.second / observations.size()) *
+				calculateEntropy(buildFrequencyDistribution(reduced_observations));
 		}
 		information_gain.push_back(entropy - local_entropy); 
 	}

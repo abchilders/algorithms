@@ -26,5 +26,25 @@
     <ClInclude Include="CsvParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DecisionTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="easy data set.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with multiple outcomes.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with single outcomes.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with single outcomes_20.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with single outcomes_80.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
