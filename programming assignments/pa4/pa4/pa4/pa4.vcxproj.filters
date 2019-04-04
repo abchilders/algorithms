@@ -15,38 +15,35 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CsvParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CampusGraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StringGraphNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tasks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="distances.csv">
+    <ClInclude Include="TreeNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CsvParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="easy data set.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="facility_codes.csv">
+    <None Include="loan stats with multiple outcomes.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="node_names.csv">
+    <None Include="loan stats with single outcomes.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with single outcomes_20.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="loan stats with single outcomes_80.csv">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

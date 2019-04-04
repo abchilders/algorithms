@@ -84,7 +84,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,8 +118,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CampusGraph.h" />
-    <ClInclude Include="Path.h" />
+    <ClInclude Include="CityGraph.h" />
+    <ClInclude Include="Edge.h" />
     <ClInclude Include="StringGraphNode.h" />
     <ClInclude Include="CsvParser.h" />
     <ClInclude Include="GraphNode.h" />
@@ -130,9 +129,18 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="distances.csv" />
-    <None Include="facility_codes.csv" />
-    <None Include="node_names.csv" />
+    <None Include="data.csv">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="deliveries1.txt" />
+    <Text Include="deliveries2.txt" />
+    <Text Include="deliveries3.1.txt" />
+    <Text Include="deliveries3.2.txt" />
+    <Text Include="map1.txt" />
+    <Text Include="map2.txt" />
+    <Text Include="map3.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

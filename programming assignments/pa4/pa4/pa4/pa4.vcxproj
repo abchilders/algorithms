@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{AB9E694D-057C-438F-937F-5DD895560294}</ProjectGuid>
-    <RootNamespace>lecture</RootNamespace>
+    <ProjectGuid>{F24F3F3F-3139-420B-BC1E-BD72E65ED230}</ProjectGuid>
+    <RootNamespace>pa4</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -77,6 +77,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,11 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -119,20 +118,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CampusGraph.h" />
-    <ClInclude Include="Path.h" />
-    <ClInclude Include="StringGraphNode.h" />
-    <ClInclude Include="CsvParser.h" />
-    <ClInclude Include="GraphNode.h" />
-    <ClInclude Include="Tasks.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="distances.csv" />
-    <None Include="facility_codes.csv" />
-    <None Include="node_names.csv" />
+    <ClInclude Include="CsvParser.h" />
+    <ClInclude Include="DecisionTree.h" />
+    <ClInclude Include="TreeNode.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="easy data set.csv" />
+    <None Include="loan stats with multiple outcomes.csv" />
+    <None Include="loan stats with single outcomes.csv" />
+    <None Include="loan stats with single outcomes_20.csv" />
+    <None Include="loan stats with single outcomes_80.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

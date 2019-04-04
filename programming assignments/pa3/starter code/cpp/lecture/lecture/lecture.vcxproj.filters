@@ -21,16 +21,16 @@
     <ClInclude Include="GraphNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CampusGraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StringGraphNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tasks.h">
+    <ClInclude Include="CityGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Path.h">
+    <ClInclude Include="Edge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -40,14 +40,31 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="distances.csv">
+    <None Include="data.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="facility_codes.csv">
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="deliveries1.txt">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="node_names.csv">
+    </Text>
+    <Text Include="deliveries2.txt">
       <Filter>Resource Files</Filter>
-    </None>
+    </Text>
+    <Text Include="map1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="map2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="deliveries3.1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="deliveries3.2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="map3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
