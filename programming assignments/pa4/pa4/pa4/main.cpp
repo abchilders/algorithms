@@ -19,6 +19,8 @@ In completing this program, I received help from the following people:
 
 // createPredictions() is inefficient, due to returning a whole vector. 
 
+// Note: increased stack size to 4 MB. 
+
 
 #include <iostream>
 #include <unordered_map>
