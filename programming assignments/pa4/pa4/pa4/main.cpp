@@ -3,19 +3,37 @@ Assignment: PA #4
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 0.5 hours
+Completion time: 6.25 hours + 09:30 - 
 In completing this program, I received help from the following people: 
 	N/A
 */
 
+// -TO DO: clarify what option 3 does
+/*	- How do I ignore unseen input?
+		-i've made an attempt at this. we'll see if it works
+	-For fun, on option 3, show how many of the predictions are correct. 
+		Can do this by comparing the prediction with data[outcome_column] each time before
+		passing into out_stream, tallying up how many times the prediction was correct,
+		and then showing [tally]/data.size().  
+*/
+
+// createPredictions() is inefficient, due to returning a whole vector. 
+
+// Note: increased stack size to 4 MB. 
 
 
 #include <iostream>
 #include <unordered_map>
 #include <cmath>
 #include <string>
+#include <fstream>
+#include <queue>
 #include "CsvParser.h"
-#include "TreeNode.h"
+#include "DecisionTree.h"
+#include "StringSplitter.h"
+
+// may be unnecessary
+#include "Menu.h"
 
 using namespace std; 
 
@@ -27,179 +45,377 @@ using namespace std;
 //	of what you've coded
 // I.E. start small and work your way up to create more reliable programs 
 
-// calculate entropy based on a frequency distribution of all outcome
-// levels 
-						// freq. dist. 
-						// each item represents 
-double calculateEntropy(const unordered_map<string, int>& outcome_level)
+// asks user for a CSV file and the outcome variable.
+// populates our data matrix, header vector, and the index of the outcome
+// variable accordingly
+void getUserCsvInput(
+	vector<vector<string>>& data, 
+	vector<string> &header, 
+	int& out_col)
 {
-	// determine denominator
-	int denominator = 0;
-	for (auto i : outcome_level)
-	{
-		denominator += i.second;
-	}
+	string file_name = "";
+	cout << "Enter the name of a CSV file: ";
+	getline(cin, file_name);
 
-	// calculate entropy
-	double entropy = 0.0;
-	for (auto item : outcome_level)
-	{
-		double ratio = (double)item.second / denominator;
-		double logged = log2(ratio);
-		entropy += -ratio * logged;
-	}
-	return entropy;
-}
+	// parse file input
+	CsvStateMachine parser{ file_name };
+	data = parser.processFile();
 
-// builds frequency distribution based on supplied vector of data
-unordered_map<string, int> buildFrequencyDistribution(const vector<string>& data)
-{
-	unordered_map<string, int> distribution{};
-	for (auto item : data)
-	{
-		distribution[item]++;
-	}
-	return distribution;
-}
+	// move the header vector to its own vector, leaving data as a vector 
+	// of vectors with pure data
+	header = move(data[0]);
+	data.erase(data.begin());
 
-// tallies up observations from one column of the data matrix
-// allows us to grab a specific column of data from our 2d matrix 
-vector<string> getObservations(const vector<vector<string>>& matrix, int column)
-{
-	vector<string> result{};
-	for (int i = 0; i < matrix.size(); i++)
+	// assuming the user's outcome variable isn't an empty string,
+	// validate it
+	string outcome_var = "";
+	do
 	{
-		result.push_back(matrix[i][column]);
-	}
-	return result;
-}
+		cout << "What is the outcome variable? ";
+		getline(cin, outcome_var);
 
-// for the given matrix, reduce matrix such that all results
-// match the supplied predictor variable on the supplied column
-vector<vector<string>> reduceMatrix(
-	const vector<vector<string>>& matrix, // what we're reducing. our matrix is row-major,
-		// which means that each ROW represents one unique item, and each column represents
-		// an attribute of the items 
-	int column, // the index of the column we're reducing on 
-	string predictor // the value of the predictor variable we reduce on
-)
-{
-	vector<vector<string>> result{};
-	int row_counter = 0;
-	for (int i = 0; i < matrix.size(); i++)
-	{
-		if (matrix[i][column] == predictor)
+		// validate that outcome_var exists
+		auto valid_outcome = find(header.begin(), header.end(), outcome_var);
+		if (valid_outcome != header.end())
 		{
-			result.push_back(matrix[i]);
+			out_col = distance(header.begin(), valid_outcome);
+		}
+		else
+		{
+			cout << "Invalid predictor variable. Try again." << endl;
+			outcome_var = "";
+		}
+	} while (outcome_var == "");
+}
+
+// option 1: using CSV file and outcome variable provided by user, 
+// build a decision tree 
+void buildTreeFromFile(DecisionTree& tree)
+{
+	vector<vector<string>> data{};
+	vector<string> header{};
+	int outcome_col = -1; 
+	getUserCsvInput(data, header, outcome_col);
+
+	// construct the tree
+	tree.buildTree(data, header, outcome_col);
+
+	cout << "Tree successfully built." << endl << endl; 
+	return; 
+}
+
+// asks user for a text file name; returns this file name
+string getUserTxtInput()
+{
+	string file_name = "";
+	cout << "Enter the name of a .txt file: ";
+	getline(cin, file_name);
+	return file_name;
+}
+
+// function that walks tree, outputting it to .txt
+void outputTree(DecisionTree& tree, string out_file)
+{
+	ofstream out_stream{ out_file };
+	if (out_stream.is_open() == true)
+	{
+		// create a queue for level-order traversal 
+		queue<pair<string, TreeNode*>> tree_nodes{};
+		tree_nodes.push(pair<string, TreeNode*>{"NULL", tree.getRoot()});
+
+		while (tree_nodes.empty() == false)
+		{
+			pair<string, TreeNode*> top = tree_nodes.front();
+			tree_nodes.pop();
+
+			// output node's edge value, name, and number of node's children
+			string edge = top.first;
+			string name = top.second->value;
+			int num_children = top.second->children.size();
+
+			out_stream << edge << "|" << name << "|" << num_children << endl;
+
+			// push all of node's children onto queue
+			for (auto kvp : top.second->children)
+			{
+				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
+			}
 		}
 	}
-	return result;
+	out_stream.close();
+	return;
 }
 
-// HEY!!! THIS IS WRONG. DIFF IT ON ADAM'S BEFORE PROCEEDING 
-// returns which column gave us the most gain 
-int findMaxGain(
-	const vector<vector<string>>& matrix, 
-	int outcome_column, 
-	double entropy)
+// option 2: writes decision tree to text file 
+void writeTreeToFile(DecisionTree& tree)
 {
-	// if the matrix has no data, exit
-	if (matrix.size() == 0)
-	{
-		return -1;
-	}
+	string output_file = getUserTxtInput();
 
-	vector<double> information_gain{};
+	// walk the tree and output it to the given output_file
+	outputTree(tree, output_file);
 
-	// calculate information gain for each predictor variable 
-	for (int column = 0; column < matrix[0].size(); column++)
-	{
-		// skip outcome column 
-		if (column == outcome_column)
-		{
-			information_gain.push_back(-1); 
-			continue; 
-		}
-
-		vector<string> observations = getObservations(matrix, column);
-		unordered_map<string, int> observation_levels = buildFrequencyDistribution(observations); 
-		double local_entropy = 0.0; 
-
-		// reduce table to observations that match a given value (e.g. overcast) 
-		for (auto level : observation_levels)
-		{
-			auto reduced_matrix = reduceMatrix(matrix, column, level.first); 
-
-			// reduce observations on a certain outcome 
-			auto reduced_observations = getObservations(reduced_matrix, outcome_column); 
-			local_entropy += ((double)level.second / observations.size()) *
-				calculateEntropy(buildFrequencyDistribution(reduced_observations));
-		}
-		information_gain.push_back(entropy - local_entropy); 
-	}
-
-	// return column with most gain
-	// to start, assume that the first column has the most gain
-	int most_gain = 0;
-	for (int i = 1; i < information_gain.size(); i++)
-	{
-		if (information_gain[i] > information_gain[most_gain])
-		{
-			most_gain = i;
-		}
-	}
-	return most_gain; 
+	cout << "Tree was written to " << output_file << endl << endl; 
+	return;
 }
 
-TreeNode* buildTree(
-	const vector<vector<string>>& matrix,
-	const vector<string>& predictors,
-	const int outcome_column
-)
+// recursively walks down a decision tree until a leaf node representing a 
+// prediction has been reached. returns that decision
+TreeNode* walkTree(
+	unordered_map<string, int>& pred_indices,
+	const vector<string>& instance_data,
+	TreeNode* root)
 {
-	// calculate entropy of entire observation set on outcome variable 
-	vector<string> observations = getObservations(matrix, outcome_column);
-	double entropy = calculateEntropy(buildFrequencyDistribution(observations));
-
-	// base case: 0 entropy
-	if (entropy < 0.01)
+	if (root == nullptr)
 	{
-		TreeNode* node = new TreeNode{}; 
-		node->value = matrix[0][outcome_column];
-		return node; 
+		return root;
 	}
 
-	int col = findMaxGain(matrix, outcome_column, entropy);
-
-	// create new node
-	TreeNode* node = new TreeNode{}; 
-	node->value = predictors[col]; 
-
-	// attach as children all levels of outcome
-	vector<string> selected_observations = getObservations(matrix, col); 
-	auto selected_levels = buildFrequencyDistribution(selected_observations); 
-
-	// for each predictor 
-	for (auto level : selected_levels)
+	// is root a leaf node?
+	if (root->children.empty() == true)
 	{
-		auto reduced_matrix = reduceMatrix(matrix, col, level.first);
-		node->children[level.first] = buildTree(reduced_matrix, predictors, outcome_column); 
+		return root; 
 	}
-	return node; 
+	else
+	{
+		// what's the index of the predictor variable we're considering?
+		string predictor = root->value; 
+		int pred_index = pred_indices[predictor]; 
+
+		// what's the value of this predictor on the given data instance?
+		string next_edge = instance_data[pred_index]; 
+
+		// walk down tree to next node along this edge IF the predictor value
+		// exists in the tree
+		if (root->children[next_edge] != nullptr)
+		{
+			return walkTree(pred_indices, instance_data, root->children[next_edge]);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+}
+
+// function to predict based on a decision tree and CSV
+vector<string> createPredictions(
+	 DecisionTree& tree, 
+	 const vector<vector<string>>& data,
+	 const vector<string>& headers,
+	 const int out_column)
+{
+	// create a hashtable mapping predictor variables to their indices
+	unordered_map<string, int> predictor_indices{}; 
+	for (int i = 0; i < headers.size(); i++)
+	{
+		string predictor = headers[i]; 
+		predictor_indices[predictor] = i; 
+	}
+
+	// a vector to hold our predictions for each row 
+	vector<string> predictions{}; 
+
+	// for each row of data, walk the tree to find its prediction
+	for (auto row : data)
+	{
+		TreeNode* pred_node = walkTree(predictor_indices, row, tree.getRoot()); 
+		if (pred_node == nullptr)
+		{
+			predictions.push_back(""); 
+		}
+		else
+		{
+			predictions.push_back(pred_node->value);
+		}
+	}
+
+	return predictions;
+}
+
+
+// option 3: using CSV file and outcome variable provided by user, output the 
+// results of the prediction from already-created decision tree to a 
+// separate CSV file specified by user 
+void predictOutcome(DecisionTree& tree)
+{
+	// check for valid decision tree
+	if (tree.isEmpty() == true)
+	{
+		cout << "Error: decision tree has not been created yet." << endl;
+		cout << "Please select option 1 first." << endl; 
+		return; 
+	}
+
+	// get input information from user 
+	vector<vector<string>> data{}; 
+	vector<string> header{}; 
+	int outcome_col = -1; 
+	getUserCsvInput(data, header, outcome_col); 
+
+	// get output information from user
+	string output_file = ""; 
+	cout << "What is the name of the CSV file to which I can output the results? ";
+	getline(cin, output_file); 
+
+	// get prediction results on data
+	vector<string> predictions = createPredictions(tree, data, header, outcome_col);
+
+	// write prediction results to output file
+	ofstream out_stream{ output_file }; 
+	int correct_preds = 0; 
+	if (out_stream.is_open() == true)
+	{
+		// output header
+		bool needs_comma = false; 
+		for (auto pred_var : header)
+		{
+			if (needs_comma == true)
+			{
+				out_stream << ",";
+			}
+			out_stream << pred_var; 
+			needs_comma = true; 
+		}
+		out_stream << ",Prediction" << endl; 
+
+		// output data with added prediction
+		for (int i = 0; i < data.size(); i++)
+		{
+			// output existing data
+			needs_comma = false; 
+			for (auto datum : data[i])
+			{
+				if (needs_comma == true)
+				{
+					out_stream << ",";
+				}
+				out_stream << datum;
+				needs_comma = true; 
+			}
+
+			// added column for prediction
+			out_stream << "," << predictions[i] << endl; 
+
+			// just for fun (not required by PA): record whether this prediction was
+			// correct or not 
+			if (data[i][outcome_col] == predictions[i])
+			{
+				correct_preds++; 
+			}
+		}
+	}
+	out_stream.close();
+
+	// calculate percentage of correct predictions
+	double percent_correct = (double(correct_preds) / data.size()) * 100; 
+
+	cout << "Predictions were written to " << output_file << endl;
+	cout << "(fun fact: " << percent_correct << "% of predictions were correct)"
+		<< endl << endl; 
+	return; 
+}
+
+// given an input_file name, this reads in the file, creates a decision
+// tree from the file, and returns a pointer to the root of the tree 
+TreeNode* treeFromText(string in_file)
+{
+	TreeNode* root{};
+
+	// open input stream
+	ifstream in_stream{ in_file }; 
+	if (in_stream.is_open() == true)
+	{
+		// read in initial line of data
+		string next_line = "";
+		getline(in_stream, next_line);
+		vector<string> node_data = StringSplitter::split(next_line, "|");
+
+		// initialize tree, assuming first edge is "NULL"
+		string name = node_data[1];
+		int num_children = stoi(node_data[2]);
+		root = new TreeNode;
+		root->value = name;
+
+		// start a queue for level-order tree creation
+		queue<pair<TreeNode*, int>> tree_nodes{}; 
+		tree_nodes.push(pair<TreeNode*, int>(root, num_children)); 
+		while (tree_nodes.empty() == false)
+		{
+			pair<TreeNode*, int> current = tree_nodes.front(); 
+			TreeNode* curr_node = current.first;
+			int num_children = current.second; 
+			tree_nodes.pop(); 
+
+			// create children of current node, pushing them onto queue for processing
+			// if they have children
+			for (int i = 0; i < num_children; i++)
+			{
+				// read in next line 
+				string next_line = ""; 
+				getline(in_stream, next_line); 
+				vector<string> node_data = StringSplitter::split(next_line, "|");
+
+				string edge = node_data[0];
+				string name = node_data[1];
+				int next_num_children = stoi(node_data[2]); 
+
+				// create a node for this child
+				TreeNode* child = new TreeNode;
+				child->value = name; 
+
+				// connect child to parent
+				curr_node->children[edge] = child; 
+
+				// if the child node has any children, push it onto the queue 
+				if (next_num_children > 0)
+				{
+					tree_nodes.push(pair<TreeNode*, int>(child, next_num_children)); 
+				}
+			}
+		}
+		
+	}
+	in_stream.close(); 
+	return root; 
+}
+
+// option 4: build an in-memory decision tree representation of a 
+// user-specified file 
+DecisionTree readTreeFromFile()
+{
+	// get user input 
+	string file_name = getUserTxtInput(); 
+
+	// construct tree from input file 
+	DecisionTree tree{ treeFromText(file_name) };
+	cout << "Tree was constructed from " << file_name << endl << endl; 
+	return tree; 
 }
 
 int main(void)
 {
+	/*
 	CsvStateMachine parser{ "easy data set.csv" };
-	vector<vector<string>> data = parser.processFile(); 
+	vector<vector<string>> data{}; 
+	data = parser.processFile(); 
 	vector<string> header = data[0]; 
 
+		/*
 	// NOTE: very slow! 
 	// to make this more algorithmically efficient, PLEASE use STL move  
 	// to move array elements 1...size() to another structure --> near-instant, says Adam 
+	//data.erase(data.begin()); 
+
+	// move the header vector to its own vector, leaving data as a vector 
+	// of vectors with pure data
+	vector<string> header{};
+	header = move(data[0]);
 	data.erase(data.begin()); 
 
-	TreeNode* root = buildTree(data, header, 4); 
+	// build a decision tree from the given data & header, where 
+	// header[4] is the outcome variable
+	DecisionTree tree{}; 
+	tree.buildTree(data, header, 4); 
 
 	// My job: data management 
 	/* Prompt user for predictor column
@@ -207,5 +423,51 @@ int main(void)
 	Re-run on 80% and see if it matches, and if so, how often was it correct? 
 	*/
 
+	bool keep_running = true; 
+	DecisionTree program_tree{};
+
+	do
+	{
+		// present menu options for the user
+		cout << "Enter the number of the task you'd like to perform: " << endl;
+		cout << "1: Build decision tree from file " << endl;
+		cout << "2: Write decision tree to file " << endl;
+		cout << "3: Predict outcome " << endl;
+		cout << "4: Read tree from file " << endl;
+		cout << "(or enter anything else to exit)" << endl;
+		string option = "";
+		cin >> option;
+		cin.ignore();
+
+		// option 1: build a decision tree from user-supplied file
+		if (option == "1")
+		{
+			buildTreeFromFile(program_tree);
+		}
+
+		// option 2: write decision tree to file 
+		else if (option == "2")
+		{
+			writeTreeToFile(program_tree); 
+		}
+
+		// option 3: use the decision tree from option 1 to predict outcomes
+		else if (option == "3")
+		{
+			predictOutcome(program_tree); 
+		}
+
+		// option 4: read tree from file 
+		else if (option == "4")
+		{
+			program_tree = readTreeFromFile(); 
+		}
+		else
+		{
+			keep_running = false; 
+		}
+	} while (keep_running == true);
+
+ 	cout << "Closing program." << endl; 
 	return 0; 
 }
