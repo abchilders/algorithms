@@ -3,33 +3,67 @@
 #define MENU_H
 
 #include <iostream>
+#include "DecisionTree.h""
 
 using namespace std; 
 
 class Menu
 {
-	static void getUserInput()
+private:
+	DecisionTree* _tree{}; 
+	vector<vector<string>>* _data{}; 
+	vector<string>* _header{}; 
+	int _outcome_col = -1; 
+
+public:
+	/*
+	// asks user for a CSV file and the outcome variable.
+	// populates the information we need to build a decision tree accordingly
+	void getUserInput()
 	{
 		string file_name = ""; 
 		cout << "Enter the name of a CSV file: "; 
-		cin >> file_name; 
+		getline(cin, file_name); 
 
 		// parse file input
-		CsvStateMachine parser{ "easy data set.csv" };
-		vector<vector<string>> data = parser.processFile();
-		//vector<string> header = data[0]; 
-
-		// NOTE: very slow! 
-		// to make this more algorithmically efficient, PLEASE use STL move  
-		// to move array elements 1...size() to another structure --> near-instant, says Adam 
-		//data.erase(data.begin()); 
+		CsvStateMachine parser{ file_name };
+		_data = &parser.processFile();
 
 		// move the header vector to its own vector, leaving data as a vector 
 		// of vectors with pure data
-		vector<string> header{};
-		header = move(data[0]);
-		data.erase(data.begin());
+		_header = move(_data[0]);
+		_data.erase(_data.begin());
+
+		// assuming the user's outcome variable isn't an empty string,
+		// validate it
+		string outcome_var = ""; 
+		do
+		{
+			cout << "What is the outcome variable?";
+			getline(cin, outcome_var);
+
+			// validate that outcome_var exists
+			auto valid_outcome = find(_header.begin(), _header.end(), outcome_var);
+			if (valid_outcome != _header.end())
+			{
+				_outcome_col = distance(_header.begin(), valid_outcome); 
+			}
+			else
+			{
+				cout << "Invalid predictor variable. Try again." << endl; 
+				outcome_var = ""; 
+			}
+		} while (outcome_var == "");
 	}
+
+	void buildTreeFromFile()
+	{
+		getUserInput(); 
+
+		// construct the tree
+		_tree->buildTree(_data, _header, _outcome_col); 
+
+	} */
 };
 
 #endif //! MENU_H
