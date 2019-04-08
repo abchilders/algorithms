@@ -10,13 +10,11 @@ In completing this program, I received help from the following people:
 
 // -TO DO: clarify what option 3 does
 /*	- How do I ignore unseen input?
+		-i've made an attempt at this. we'll see if it works
 	-For fun, on option 3, show how many of the predictions are correct. 
 		Can do this by comparing the prediction with data[outcome_column] each time before
 		passing into out_stream, tallying up how many times the prediction was correct,
-		and then showing [tally]/data.size(). 
-	-Specify for option 2 -- should the user input the name of the text file
-		or do I decide that? 
-	-FINISH option 4. 
+		and then showing [tally]/data.size().  
 */
 
 // createPredictions() is inefficient, due to returning a whole vector. 
@@ -71,7 +69,7 @@ void getUserCsvInput(
 	string outcome_var = "";
 	do
 	{
-		cout << "What is the outcome variable?";
+		cout << "What is the outcome variable? ";
 		getline(cin, outcome_var);
 
 		// validate that outcome_var exists
@@ -184,8 +182,16 @@ TreeNode* walkTree(
 		// what's the value of this predictor on the given data instance?
 		string next_edge = instance_data[pred_index]; 
 
-		// walk down tree to next node along this edge
-		return walkTree(pred_indices, instance_data, root->children[next_edge]);
+		// walk down tree to next node along this edge IF the predictor value
+		// exists in the tree
+		if (root->children[next_edge] != nullptr)
+		{
+			return walkTree(pred_indices, instance_data, root->children[next_edge]);
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 }
 
@@ -211,7 +217,14 @@ vector<string> createPredictions(
 	for (auto row : data)
 	{
 		TreeNode* pred_node = walkTree(predictor_indices, row, tree.getRoot()); 
-		predictions.push_back(pred_node->value); 
+		if (pred_node == nullptr)
+		{
+			predictions.push_back(""); 
+		}
+		else
+		{
+			predictions.push_back(pred_node->value);
+		}
 	}
 
 	return predictions;
@@ -239,7 +252,7 @@ void predictOutcome(DecisionTree& tree)
 
 	// get output information from user
 	string output_file = ""; 
-	cout << "What is the name of the CSV file to which I can output the results?";
+	cout << "What is the name of the CSV file to which I can output the results? ";
 	getline(cin, output_file); 
 
 	// get prediction results on data
@@ -247,6 +260,7 @@ void predictOutcome(DecisionTree& tree)
 
 	// write prediction results to output file
 	ofstream out_stream{ output_file }; 
+	int correct_preds = 0; 
 	if (out_stream.is_open() == true)
 	{
 		// output header
@@ -279,11 +293,23 @@ void predictOutcome(DecisionTree& tree)
 
 			// added column for prediction
 			out_stream << "," << predictions[i] << endl; 
+
+			// just for fun (not required by PA): record whether this prediction was
+			// correct or not 
+			if (data[i][outcome_col] == predictions[i])
+			{
+				correct_preds++; 
+			}
 		}
 	}
-	out_stream.close(); 
+	out_stream.close();
 
-	cout << "Predictions were written to " << output_file << endl << endl; 
+	// calculate percentage of correct predictions
+	double percent_correct = (double(correct_preds) / data.size()) * 100; 
+
+	cout << "Predictions were written to " << output_file << endl;
+	cout << "(fun fact: " << percent_correct << "% of predictions were correct)"
+		<< endl << endl; 
 	return; 
 }
 
@@ -440,6 +466,6 @@ int main(void)
 		}
 	} while (keep_running == true);
 
-	cout << "Closing program." << endl; 
+ 	cout << "Closing program." << endl; 
 	return 0; 
 }
