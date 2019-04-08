@@ -1,0 +1,8 @@
+NULL|Outlook|3
+Sunny|Humidity|2
+Overcast|Yes|0
+Rain|Wind|2
+High|No|0
+Normal|Yes|0
+Weak|Yes|0
+Strong|No|0

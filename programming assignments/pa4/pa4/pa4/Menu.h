@@ -19,7 +19,7 @@ public:
 	/*
 	// asks user for a CSV file and the outcome variable.
 	// populates the information we need to build a decision tree accordingly
-	void getUserInput()
+	void getUserCsvInput()
 	{
 		string file_name = ""; 
 		cout << "Enter the name of a CSV file: "; 
@@ -58,7 +58,7 @@ public:
 
 	void buildTreeFromFile()
 	{
-		getUserInput(); 
+		getUserCsvInput(); 
 
 		// construct the tree
 		_tree->buildTree(_data, _header, _outcome_col); 

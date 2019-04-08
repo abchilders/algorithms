@@ -3,16 +3,18 @@ Assignment: PA #4
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 4.5 + 02:15 -
+Completion time: 5 + 03:00 - 
 In completing this program, I received help from the following people: 
 	N/A
 */
 
-// TO DO: clarify what option 3 does
+// -TO DO: clarify what option 3 does
 /*	-For fun, on option 3, show how many of the predictions are correct. 
 		Can do this by comparing the prediction with data[outcome_column] each time before
 		passing into out_stream, tallying up how many times the prediction was correct,
 		and then showing [tally]/data.size(). 
+	-Specify for option 2 -- should the user input the name of the text file
+		or do I decide that? 
 */
 
 // createPredictions() is inefficient, due to returning a whole vector. 
@@ -23,6 +25,7 @@ In completing this program, I received help from the following people:
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <queue>
 #include "CsvParser.h"
 #include "DecisionTree.h"
 #include "Menu.h"
@@ -40,7 +43,7 @@ using namespace std;
 // asks user for a CSV file and the outcome variable.
 // populates our data matrix, header vector, and the index of the outcome
 // variable accordingly
-void getUserInput(
+void getUserCsvInput(
 	vector<vector<string>>& data, 
 	vector<string> &header, 
 	int& out_col)
@@ -87,7 +90,7 @@ void buildTreeFromFile(DecisionTree& tree)
 	vector<vector<string>> data{};
 	vector<string> header{};
 	int outcome_col = -1; 
-	getUserInput(data, header, outcome_col);
+	getUserCsvInput(data, header, outcome_col);
 
 	// construct the tree
 	tree.buildTree(data, header, outcome_col);
@@ -153,8 +156,6 @@ vector<string> createPredictions(
 	return predictions;
 }
 
-// function to output vector of predictions to CSV
-
 
 // option 3: using CSV file and outcome variable provided by user, output the 
 // results of the prediction from already-created decision tree to a 
@@ -175,7 +176,7 @@ void predictOutcome(DecisionTree& tree)
 	vector<vector<string>> data{}; 
 	vector<string> header{}; 
 	int outcome_col = -1; 
-	getUserInput(data, header, outcome_col); 
+	getUserCsvInput(data, header, outcome_col); 
 
 	// get output information from user
 	string output_file = ""; 
@@ -222,6 +223,59 @@ void predictOutcome(DecisionTree& tree)
 		}
 	}
 	out_stream.close(); 
+	return; 
+}
+
+// asks user for a text file name; returns this file name
+string getUserTxtInput()
+{
+	string file_name = ""; 
+	cout << "Enter the name of a .txt file: "; 
+	getline(cin, file_name); 
+	return file_name; 
+}
+
+// function that walks tree, outputting it to .txt
+void outputTree(DecisionTree& tree, string out_file)
+{
+	ofstream out_stream{ out_file };
+	if (out_stream.is_open() == true)
+	{
+		// create a queue for level-order traversal 
+		queue<pair<string, TreeNode*>> tree_nodes{}; 
+		tree_nodes.push(pair<string, TreeNode*>{"NULL", tree.getRoot()});
+
+		while (tree_nodes.empty() == false)
+		{
+			pair<string, TreeNode*> top = tree_nodes.front(); 
+			tree_nodes.pop(); 
+
+			// output node's edge value, name, and number of node's children
+			string edge = top.first; 
+			string name = top.second->value; 
+			int num_children = top.second->children.size();
+
+			out_stream << edge << "|" << name << "|" << num_children << endl; 
+
+			// push all of node's children onto queue
+			for (auto kvp : top.second->children)
+			{
+				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
+			}
+		}
+	}
+	out_stream.close(); 
+	return; 
+}
+
+// option 2: writes decision tree to text file 
+void writeTreeToFile(DecisionTree& tree)
+{
+	string output_file = getUserTxtInput(); 
+
+	// walk the tree and output it to the given output_file
+	outputTree(tree, output_file); 
+
 	return; 
 }
 
@@ -277,9 +331,11 @@ int main(void)
 		{
 			buildTreeFromFile(initial_tree);
 		}
+
+		// option 2: write decision tree to file 
 		else if (option == "2")
 		{
-			// TO DO 
+			writeTreeToFile(initial_tree); 
 		}
 
 		// option 3: use the decision tree from option 1 to predict outcomes
