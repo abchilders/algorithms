@@ -3,7 +3,7 @@ Assignment: PA #4
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 6.25 hours
+Completion time: 6.25 hours + 09:30 - 
 In completing this program, I received help from the following people: 
 	N/A
 */
@@ -100,6 +100,8 @@ void buildTreeFromFile(DecisionTree& tree)
 	// construct the tree
 	tree.buildTree(data, header, outcome_col);
 
+	cout << "Tree successfully built." << endl << endl; 
+	return; 
 }
 
 // asks user for a text file name; returns this file name
@@ -152,6 +154,7 @@ void writeTreeToFile(DecisionTree& tree)
 	// walk the tree and output it to the given output_file
 	outputTree(tree, output_file);
 
+	cout << "Tree was written to " << output_file << endl << endl; 
 	return;
 }
 
@@ -218,8 +221,6 @@ vector<string> createPredictions(
 // option 3: using CSV file and outcome variable provided by user, output the 
 // results of the prediction from already-created decision tree to a 
 // separate CSV file specified by user 
-// NOTE!! CURRENTLY, THE OUTCOME COLUMN GIVEN BY THE USER IS MEANINGLESS-
-//	ASK ADAM SPECIFICALLY WHAT THE PURPOSE OF THIS IS 
 void predictOutcome(DecisionTree& tree)
 {
 	// check for valid decision tree
@@ -281,6 +282,8 @@ void predictOutcome(DecisionTree& tree)
 		}
 	}
 	out_stream.close(); 
+
+	cout << "Predictions were written to " << output_file << endl << endl; 
 	return; 
 }
 
@@ -288,41 +291,64 @@ void predictOutcome(DecisionTree& tree)
 // tree from the file, and returns a pointer to the root of the tree 
 TreeNode* treeFromText(string in_file)
 {
+	TreeNode* root{};
+
 	// open input stream
 	ifstream in_stream{ in_file }; 
 	if (in_stream.is_open() == true)
 	{
-		while (in_stream.good() == true)
+		// read in initial line of data
+		string next_line = "";
+		getline(in_stream, next_line);
+		vector<string> node_data = StringSplitter::split(next_line, "|");
+
+		// initialize tree, assuming first edge is "NULL"
+		string name = node_data[1];
+		int num_children = stoi(node_data[2]);
+		root = new TreeNode;
+		root->value = name;
+
+		// start a queue for level-order tree creation
+		queue<pair<TreeNode*, int>> tree_nodes{}; 
+		tree_nodes.push(pair<TreeNode*, int>(root, num_children)); 
+		while (tree_nodes.empty() == false)
 		{
-			// read in initial line of data
-			string next_line = "";
-			getline(in_stream, next_line);
-			vector<string> node_data = StringSplitter::split(next_line, "|");
+			pair<TreeNode*, int> current = tree_nodes.front(); 
+			TreeNode* curr_node = current.first;
+			int num_children = current.second; 
+			tree_nodes.pop(); 
 
-			// initialize tree, assuming first edge is "NULL"
-			string name = node_data[1];
-			int num_children = stoi(node_data[2]);
-
-			TreeNode* root = new TreeNode;
-			root->value = name;
-
-			// start a queue for level-order tree creation
-			queue<TreeNode*> tree_nodes{}; 
-			tree_nodes.push(root); 
-			while (tree_nodes.empty() == false)
+			// create children of current node, pushing them onto queue for processing
+			// if they have children
+			for (int i = 0; i < num_children; i++)
 			{
-				TreeNode* current = tree_nodes.front(); 
-				tree_nodes.pop(); 
+				// read in next line 
+				string next_line = ""; 
+				getline(in_stream, next_line); 
+				vector<string> node_data = StringSplitter::split(next_line, "|");
 
-				// create children of current node, pushing them onto
-				// queue as we go
+				string edge = node_data[0];
+				string name = node_data[1];
+				int next_num_children = stoi(node_data[2]); 
 
-				// STOPPED HERE- SOME LOGIC DOESN'T SEEM RIGHT,
-				// WILL TRY AGAIN WHEN I GET UP
-				
+				// create a node for this child
+				TreeNode* child = new TreeNode;
+				child->value = name; 
+
+				// connect child to parent
+				curr_node->children[edge] = child; 
+
+				// if the child node has any children, push it onto the queue 
+				if (next_num_children > 0)
+				{
+					tree_nodes.push(pair<TreeNode*, int>(child, next_num_children)); 
+				}
 			}
 		}
+		
 	}
+	in_stream.close(); 
+	return root; 
 }
 
 // option 4: build an in-memory decision tree representation of a 
@@ -334,6 +360,7 @@ DecisionTree readTreeFromFile()
 
 	// construct tree from input file 
 	DecisionTree tree{ treeFromText(file_name) };
+	cout << "Tree was constructed from " << file_name << endl << endl; 
 	return tree; 
 }
 
@@ -369,7 +396,7 @@ int main(void)
 	*/
 
 	bool keep_running = true; 
-	DecisionTree initial_tree{};
+	DecisionTree program_tree{};
 
 	do
 	{
@@ -387,25 +414,25 @@ int main(void)
 		// option 1: build a decision tree from user-supplied file
 		if (option == "1")
 		{
-			buildTreeFromFile(initial_tree);
+			buildTreeFromFile(program_tree);
 		}
 
 		// option 2: write decision tree to file 
 		else if (option == "2")
 		{
-			writeTreeToFile(initial_tree); 
+			writeTreeToFile(program_tree); 
 		}
 
 		// option 3: use the decision tree from option 1 to predict outcomes
 		else if (option == "3")
 		{
-			predictOutcome(initial_tree); 
+			predictOutcome(program_tree); 
 		}
 
 		// option 4: read tree from file 
 		else if (option == "4")
 		{
-			// TO DO 
+			program_tree = readTreeFromFile(); 
 		}
 		else
 		{
