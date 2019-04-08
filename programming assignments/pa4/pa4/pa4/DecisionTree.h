@@ -1,4 +1,6 @@
 // All member functions are written by Adam Carter. 
+// I rewrote buildTree() into buildTree() and buildTreeHelper().
+// I also wrote getRoot() and isEmpty().
 
 #pragma once
 #ifndef DECISION_TREE_H
@@ -10,9 +12,28 @@
 class DecisionTree
 {
 private:
-	TreeNode* _tree{}; 
+	TreeNode* _root{};
 
 public:
+	// returns the root of the decision tree
+	TreeNode* getRoot()
+	{
+		return _root;
+	}
+	
+	// returns true if the decision tree contains nothing 
+	bool isEmpty()
+	{
+		if (_root == nullptr)
+		{
+			return true; 
+		}
+		else
+		{
+			return false; 
+		}
+	}
+
 	// calculate entropy based on a frequency distribution of all outcome
 	// levels 
 							// freq. dist. 
@@ -136,7 +157,7 @@ public:
 		return most_gain;
 	}
 
-	TreeNode* buildTree(
+	TreeNode* buildTreeHelper(
 		const vector<vector<string>>& matrix,
 		const vector<string>& predictors,
 		const int outcome_column
@@ -168,10 +189,18 @@ public:
 		for (auto level : selected_levels)
 		{
 			auto reduced_matrix = reduceMatrix(matrix, col, level.first);
-			node->children[level.first] = buildTree(reduced_matrix, predictors, outcome_column);
+			node->children[level.first] = buildTreeHelper(reduced_matrix, predictors, outcome_column);
 		}
-		_tree = node; 
 		return node;
+	}
+
+	void buildTree(
+		const vector<vector<string>>& matrix,
+		const vector<string>& predictors,
+		const int outcome_column
+	)
+	{
+		_root = buildTreeHelper(matrix, predictors, outcome_column); 
 	}
 };
 

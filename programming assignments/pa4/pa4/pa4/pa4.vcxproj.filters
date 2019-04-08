@@ -49,5 +49,8 @@
     <None Include="loan stats with single outcomes_80.csv">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="easy data set out.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
