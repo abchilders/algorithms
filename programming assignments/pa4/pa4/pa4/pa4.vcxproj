@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClInclude Include="CsvParser.h" />
     <ClInclude Include="DecisionTree.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <ItemGroup>
