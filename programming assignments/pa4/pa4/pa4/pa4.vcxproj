@@ -124,6 +124,7 @@
     <ClInclude Include="CsvParser.h" />
     <ClInclude Include="DecisionTree.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="StringSplitter.h" />
     <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +134,9 @@
     <None Include="loan stats with single outcomes.csv" />
     <None Include="loan stats with single outcomes_20.csv" />
     <None Include="loan stats with single outcomes_80.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="easy data set.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 // All member functions are written by Adam Carter. 
 // I rewrote buildTree() into buildTree() and buildTreeHelper().
-// I also wrote getRoot() and isEmpty().
+// I also wrote getRoot() and isEmpty(), and constructors. 
 
 #pragma once
 #ifndef DECISION_TREE_H
@@ -15,6 +15,18 @@ private:
 	TreeNode* _root{};
 
 public:
+	// default constructor
+	DecisionTree()
+	{
+		_root = nullptr; 
+	}
+
+	// constructor
+	DecisionTree(TreeNode* new_root)
+	{
+		_root = new_root; 
+	}
+
 	// returns the root of the decision tree
 	TreeNode* getRoot()
 	{

@@ -3,18 +3,20 @@ Assignment: PA #4
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 5 + 03:00 - 
+Completion time: 6.25 hours
 In completing this program, I received help from the following people: 
 	N/A
 */
 
 // -TO DO: clarify what option 3 does
-/*	-For fun, on option 3, show how many of the predictions are correct. 
+/*	- How do I ignore unseen input?
+	-For fun, on option 3, show how many of the predictions are correct. 
 		Can do this by comparing the prediction with data[outcome_column] each time before
 		passing into out_stream, tallying up how many times the prediction was correct,
 		and then showing [tally]/data.size(). 
 	-Specify for option 2 -- should the user input the name of the text file
 		or do I decide that? 
+	-FINISH option 4. 
 */
 
 // createPredictions() is inefficient, due to returning a whole vector. 
@@ -28,6 +30,9 @@ In completing this program, I received help from the following people:
 #include <queue>
 #include "CsvParser.h"
 #include "DecisionTree.h"
+#include "StringSplitter.h"
+
+// may be unnecessary
 #include "Menu.h"
 
 using namespace std; 
@@ -95,6 +100,59 @@ void buildTreeFromFile(DecisionTree& tree)
 	// construct the tree
 	tree.buildTree(data, header, outcome_col);
 
+}
+
+// asks user for a text file name; returns this file name
+string getUserTxtInput()
+{
+	string file_name = "";
+	cout << "Enter the name of a .txt file: ";
+	getline(cin, file_name);
+	return file_name;
+}
+
+// function that walks tree, outputting it to .txt
+void outputTree(DecisionTree& tree, string out_file)
+{
+	ofstream out_stream{ out_file };
+	if (out_stream.is_open() == true)
+	{
+		// create a queue for level-order traversal 
+		queue<pair<string, TreeNode*>> tree_nodes{};
+		tree_nodes.push(pair<string, TreeNode*>{"NULL", tree.getRoot()});
+
+		while (tree_nodes.empty() == false)
+		{
+			pair<string, TreeNode*> top = tree_nodes.front();
+			tree_nodes.pop();
+
+			// output node's edge value, name, and number of node's children
+			string edge = top.first;
+			string name = top.second->value;
+			int num_children = top.second->children.size();
+
+			out_stream << edge << "|" << name << "|" << num_children << endl;
+
+			// push all of node's children onto queue
+			for (auto kvp : top.second->children)
+			{
+				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
+			}
+		}
+	}
+	out_stream.close();
+	return;
+}
+
+// option 2: writes decision tree to text file 
+void writeTreeToFile(DecisionTree& tree)
+{
+	string output_file = getUserTxtInput();
+
+	// walk the tree and output it to the given output_file
+	outputTree(tree, output_file);
+
+	return;
 }
 
 // recursively walks down a decision tree until a leaf node representing a 
@@ -226,57 +284,57 @@ void predictOutcome(DecisionTree& tree)
 	return; 
 }
 
-// asks user for a text file name; returns this file name
-string getUserTxtInput()
+// given an input_file name, this reads in the file, creates a decision
+// tree from the file, and returns a pointer to the root of the tree 
+TreeNode* treeFromText(string in_file)
 {
-	string file_name = ""; 
-	cout << "Enter the name of a .txt file: "; 
-	getline(cin, file_name); 
-	return file_name; 
-}
-
-// function that walks tree, outputting it to .txt
-void outputTree(DecisionTree& tree, string out_file)
-{
-	ofstream out_stream{ out_file };
-	if (out_stream.is_open() == true)
+	// open input stream
+	ifstream in_stream{ in_file }; 
+	if (in_stream.is_open() == true)
 	{
-		// create a queue for level-order traversal 
-		queue<pair<string, TreeNode*>> tree_nodes{}; 
-		tree_nodes.push(pair<string, TreeNode*>{"NULL", tree.getRoot()});
-
-		while (tree_nodes.empty() == false)
+		while (in_stream.good() == true)
 		{
-			pair<string, TreeNode*> top = tree_nodes.front(); 
-			tree_nodes.pop(); 
+			// read in initial line of data
+			string next_line = "";
+			getline(in_stream, next_line);
+			vector<string> node_data = StringSplitter::split(next_line, "|");
 
-			// output node's edge value, name, and number of node's children
-			string edge = top.first; 
-			string name = top.second->value; 
-			int num_children = top.second->children.size();
+			// initialize tree, assuming first edge is "NULL"
+			string name = node_data[1];
+			int num_children = stoi(node_data[2]);
 
-			out_stream << edge << "|" << name << "|" << num_children << endl; 
+			TreeNode* root = new TreeNode;
+			root->value = name;
 
-			// push all of node's children onto queue
-			for (auto kvp : top.second->children)
+			// start a queue for level-order tree creation
+			queue<TreeNode*> tree_nodes{}; 
+			tree_nodes.push(root); 
+			while (tree_nodes.empty() == false)
 			{
-				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
+				TreeNode* current = tree_nodes.front(); 
+				tree_nodes.pop(); 
+
+				// create children of current node, pushing them onto
+				// queue as we go
+
+				// STOPPED HERE- SOME LOGIC DOESN'T SEEM RIGHT,
+				// WILL TRY AGAIN WHEN I GET UP
+				
 			}
 		}
 	}
-	out_stream.close(); 
-	return; 
 }
 
-// option 2: writes decision tree to text file 
-void writeTreeToFile(DecisionTree& tree)
+// option 4: build an in-memory decision tree representation of a 
+// user-specified file 
+DecisionTree readTreeFromFile()
 {
-	string output_file = getUserTxtInput(); 
+	// get user input 
+	string file_name = getUserTxtInput(); 
 
-	// walk the tree and output it to the given output_file
-	outputTree(tree, output_file); 
-
-	return; 
+	// construct tree from input file 
+	DecisionTree tree{ treeFromText(file_name) };
+	return tree; 
 }
 
 int main(void)
@@ -343,6 +401,8 @@ int main(void)
 		{
 			predictOutcome(initial_tree); 
 		}
+
+		// option 4: read tree from file 
 		else if (option == "4")
 		{
 			// TO DO 
@@ -351,15 +411,6 @@ int main(void)
 		{
 			keep_running = false; 
 		}
-
-		/* Option 2: Write decision tree to file
-		*/
-
-		/* Option 3: Predict outcome
-		*/
-
-		/* Option 4: Read tree from file
-		*/
 	} while (keep_running == true);
 
 	cout << "Closing program." << endl; 
