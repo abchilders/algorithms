@@ -1,6 +1,16 @@
-// All member functions are written by Adam Carter. 
-// I rewrote buildTree() into buildTree() and buildTreeHelper().
-// I also wrote getRoot() and isEmpty(), and constructors. 
+/*
+Assignment: PA #4 - Decision Trees
+Description: This program builds a decision tree based on a supplied CSV file.
+Author: Alex Childers
+HSU ID: 013145324
+Completion time: 14 hours
+In completing this program, I received help from the following people:
+	N/A
+*/
+
+// Most member functions are written by Adam Carter. 
+// Alex rewrote buildTree() into buildTree() and buildTreeHelper(), 
+// wrote getRoot() and isEmpty(), and created DecisionTree constructors. 
 
 #pragma once
 #ifndef DECISION_TREE_H

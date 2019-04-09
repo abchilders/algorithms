@@ -1,31 +1,17 @@
 /*
-Assignment: PA #4
+Assignment: PA #4 - Decision Trees
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 9.25 hours + 17:00 - 
+Completion time: 14 hours
 In completing this program, I received help from the following people: 
 	N/A
 */
 
-// -TO DO: 
-/*	
-	- How do I ignore unseen input?
-		-i've made an attempt at this. we'll see if it works
-	-For fun, on option 3, show how many of the predictions are correct. 
-		Can do this by comparing the prediction with data[outcome_column] each time before
-		passing into out_stream, tallying up how many times the prediction was correct,
-		and then showing [tally]/data.size().  
+/*  Note: some real-world data, including tip_redshirt.csv, tire_reliability.csv,
+	and bank-additional.csv, are available for this program to use. Their sources and 
+	descriptions can be found in pa4/pa4/.
 */
-
-// createPredictions() is inefficient, due to returning a whole vector. 
-
-// Note: increased stack size to some absurd amount.
-// Note: if you want to expand how many rows we build a decision tree from,
-//	go to line [FILL IN HERE WHEN DONE]. 
-
-
-
 
 #include <iostream>
 #include <unordered_map>
@@ -39,18 +25,11 @@ In completing this program, I received help from the following people:
 #include "DecisionTree.h"
 #include "StringSplitter.h"
 
-// may be unnecessary
-#include "Menu.h"
-
 using namespace std; 
 
-// advice: bottom-up programming is useful
-// start from what you know (invariants) and write smaller, good-quality
-// functions based on these, then combine them
-//	^ test-driven development: you write a test before you write code to test 
-	// the truthfulness
-//	of what you've coded
-// I.E. start small and work your way up to create more reliable programs 
+// the maximum number of rows a 2-D matrix should have for building
+// a decision tree; necessary to avoid stack overflow 
+const int MAX_ROWS = 1000; 
 
 // returns a vector containing the requested number of rows, randomly selected from
 // the given vector
@@ -137,11 +116,12 @@ void buildTreeFromFile(DecisionTree& tree)
 	int outcome_col = -1; 
 	getUserCsvInput(data, header, outcome_col, "to build a tree from");
 
-	// a solution to getting stack overflow on large data sets: if data.size() > 1000,
-	// select 1000 random rows from data on which to create the decision tree 
-	if (data.size() > 1000)
+	// a solution to getting stack overflow on large data sets: 
+	// if data.size() > MAX_ROWS, select random rows from data on which to 
+	// create the decision tree 
+	if (data.size() > MAX_ROWS)
 	{
-		data = randomReduction(data, 1000);
+		data = randomReduction(data, MAX_ROWS);
 	}
 
 	// construct the tree
@@ -176,6 +156,10 @@ void outputTree(DecisionTree& tree, string out_file)
 			tree_nodes.pop();
 
 			// output node's edge value, name, and number of node's children
+			if (top.second == nullptr)
+			{
+				cout << "stop"; 
+			}
 			string edge = top.first;
 			string name = top.second->value;
 			int num_children = top.second->children.size();
@@ -185,6 +169,10 @@ void outputTree(DecisionTree& tree, string out_file)
 			// push all of node's children onto queue
 			for (auto kvp : top.second->children)
 			{
+				if (kvp.second == nullptr)
+				{
+					cout << "stop"; 
+				}
 				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
 			}
 		}
@@ -270,7 +258,7 @@ vector<string> createPredictions(
 		{
 			// if we don't recognize a predictor variable value, don't 
 			// make a prediction. push a placeholder in
-			predictions.push_back(""); 
+			predictions.push_back(" "); 
 		}
 		else
 		{
@@ -428,7 +416,6 @@ TreeNode* treeFromText(string in_file)
 				}
 			}
 		}
-		
 	}
 	in_stream.close(); 
 	return root; 
@@ -449,35 +436,6 @@ DecisionTree readTreeFromFile()
 
 int main(void)
 {
-	/*
-	CsvStateMachine parser{ "easy data set.csv" };
-	vector<vector<string>> data{}; 
-	data = parser.processFile(); 
-	vector<string> header = data[0]; 
-
-		/*
-	// NOTE: very slow! 
-	// to make this more algorithmically efficient, PLEASE use STL move  
-	// to move array elements 1...size() to another structure --> near-instant, says Adam 
-	//data.erase(data.begin()); 
-
-	// move the header vector to its own vector, leaving data as a vector 
-	// of vectors with pure data
-	vector<string> header{};
-	header = move(data[0]);
-	data.erase(data.begin()); 
-
-	// build a decision tree from the given data & header, where 
-	// header[4] is the outcome variable
-	DecisionTree tree{}; 
-	tree.buildTree(data, header, 4); 
-
-	// My job: data management 
-	/* Prompt user for predictor column
-	Run prediction algorithm on 20 % CSV
-	Re-run on 80% and see if it matches, and if so, how often was it correct? 
-	*/
-
 	bool keep_running = true; 
 	DecisionTree program_tree{};
 
@@ -489,10 +447,11 @@ int main(void)
 		cout << "2: Write decision tree to file " << endl;
 		cout << "3: Predict outcome " << endl;
 		cout << "4: Read tree from file " << endl;
-		cout << "(or enter anything else to exit)" << endl;
+		cout << "(or enter anything else to exit): ";
 		string option = "";
 		cin >> option;
 		cin.ignore();
+		cout << endl; 
 
 		// option 1: build a decision tree from user-supplied file
 		if (option == "1")
@@ -517,6 +476,7 @@ int main(void)
 		{
 			program_tree = readTreeFromFile(); 
 		}
+
 		else
 		{
 			keep_running = false; 

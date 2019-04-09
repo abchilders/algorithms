@@ -1,9 +1,9 @@
 /*
-Assignment: PA #1 - Huffman Coding
-Description: This program uses Huffman codes to compress files.
+Assignment: PA #4 - Decision Trees
+Description: This program builds a decision tree based on a supplied CSV file.
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 10.75 hours
+Completion time: 14 hours
 In completing this program, I received help from the following people:
 	N/A
 */
