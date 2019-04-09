@@ -1,13 +1,10 @@
 /*
-Assignment: PA #3 - Minimum Spanning Tree
-Description: Given a file containing a map of the city (where each line contains a
-	source, sink, and weight all representing an edge), and a file containing
-	a list of houses that will receive deliveries for the next day, this program
-	uses a minimum spanning tree to compute the mimimum amount of time required
-	to deliver packages to all requested houses.
+Assignment: PA #4 - Decision Trees
+Description: this program builds a decision tree based on a supplied 
+	CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 10 hours
+Completion time: 12.25 hours 
 In completing this program, I received help from the following people:
 	N/A
 */

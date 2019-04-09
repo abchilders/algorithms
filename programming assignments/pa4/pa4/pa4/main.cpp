@@ -1,49 +1,67 @@
 /*
-Assignment: PA #4
+Assignment: PA #4 - Decision Trees
 Description: This program builds a decision tree based on a supplied CSV file. 
 Author: Alex Childers
 HSU ID: 013145324
-Completion time: 6.25 hours + 09:30 - 
+Completion time: 14 hours
 In completing this program, I received help from the following people: 
 	N/A
 */
 
-// -TO DO: clarify what option 3 does
-/*	- How do I ignore unseen input?
-		-i've made an attempt at this. we'll see if it works
-	-For fun, on option 3, show how many of the predictions are correct. 
-		Can do this by comparing the prediction with data[outcome_column] each time before
-		passing into out_stream, tallying up how many times the prediction was correct,
-		and then showing [tally]/data.size().  
+/*  Note: some real-world data, including tip_redshirt.csv, tire_reliability.csv,
+	and bank-additional.csv, are available for this program to use. Their sources and 
+	descriptions can be found in pa4/pa4/.
 */
-
-// createPredictions() is inefficient, due to returning a whole vector. 
-
-// Note: increased stack size to 4 MB. 
-
 
 #include <iostream>
 #include <unordered_map>
 #include <cmath>
+#include <ctime>
 #include <string>
 #include <fstream>
 #include <queue>
+#include <algorithm>
 #include "CsvParser.h"
 #include "DecisionTree.h"
 #include "StringSplitter.h"
 
-// may be unnecessary
-#include "Menu.h"
-
 using namespace std; 
 
-// advice: bottom-up programming is useful
-// start from what you know (invariants) and write smaller, good-quality
-// functions based on these, then combine them
-//	^ test-driven development: you write a test before you write code to test 
-	// the truthfulness
-//	of what you've coded
-// I.E. start small and work your way up to create more reliable programs 
+// the maximum number of rows a 2-D matrix should have for building
+// a decision tree; necessary to avoid stack overflow 
+const int MAX_ROWS = 1000; 
+
+// returns a vector containing the requested number of rows, randomly selected from
+// the given vector
+template<typename T>
+vector<T> randomReduction(const vector<T>& data, int rows)
+{
+	// seed the random number generator
+	srand((unsigned)time(0)); 
+
+	rows = min(data.size(), (unsigned)rows); 
+
+	vector<T> reduced_vect{}; 
+	unordered_map<int, int> selected_rows{};
+	for (int i = 0; i < rows; i++)
+	{
+		bool found_row = false;
+		while (found_row == false)
+		{	
+			// randomly select a row
+			int random_row = rand() % rows;
+
+			// if this row hasn't already been selected, add it to reduced_vect
+			if (selected_rows[random_row] < 1)
+			{
+				selected_rows[random_row]++; 
+				reduced_vect.push_back(data[random_row]);
+				found_row = true; 
+			}
+		}	
+	}
+	return reduced_vect; 
+}
 
 // asks user for a CSV file and the outcome variable.
 // populates our data matrix, header vector, and the index of the outcome
@@ -51,10 +69,11 @@ using namespace std;
 void getUserCsvInput(
 	vector<vector<string>>& data, 
 	vector<string> &header, 
-	int& out_col)
+	int& out_col,
+	const string& file_purpose)
 {
 	string file_name = "";
-	cout << "Enter the name of a CSV file: ";
+	cout << "Enter the name of a CSV file " << file_purpose << ": ";
 	getline(cin, file_name);
 
 	// parse file input
@@ -95,7 +114,15 @@ void buildTreeFromFile(DecisionTree& tree)
 	vector<vector<string>> data{};
 	vector<string> header{};
 	int outcome_col = -1; 
-	getUserCsvInput(data, header, outcome_col);
+	getUserCsvInput(data, header, outcome_col, "to build a tree from");
+
+	// a solution to getting stack overflow on large data sets: 
+	// if data.size() > MAX_ROWS, select random rows from data on which to 
+	// create the decision tree 
+	if (data.size() > MAX_ROWS)
+	{
+		data = randomReduction(data, MAX_ROWS);
+	}
 
 	// construct the tree
 	tree.buildTree(data, header, outcome_col);
@@ -105,10 +132,10 @@ void buildTreeFromFile(DecisionTree& tree)
 }
 
 // asks user for a text file name; returns this file name
-string getUserTxtInput()
+string getUserTxtInput(const string& file_purpose)
 {
 	string file_name = "";
-	cout << "Enter the name of a .txt file: ";
+	cout << "Enter the name of a .txt file " << file_purpose << ": ";
 	getline(cin, file_name);
 	return file_name;
 }
@@ -129,6 +156,10 @@ void outputTree(DecisionTree& tree, string out_file)
 			tree_nodes.pop();
 
 			// output node's edge value, name, and number of node's children
+			if (top.second == nullptr)
+			{
+				cout << "stop"; 
+			}
 			string edge = top.first;
 			string name = top.second->value;
 			int num_children = top.second->children.size();
@@ -138,6 +169,10 @@ void outputTree(DecisionTree& tree, string out_file)
 			// push all of node's children onto queue
 			for (auto kvp : top.second->children)
 			{
+				if (kvp.second == nullptr)
+				{
+					cout << "stop"; 
+				}
 				tree_nodes.push(pair<string, TreeNode*>{kvp.first, kvp.second});
 			}
 		}
@@ -149,7 +184,7 @@ void outputTree(DecisionTree& tree, string out_file)
 // option 2: writes decision tree to text file 
 void writeTreeToFile(DecisionTree& tree)
 {
-	string output_file = getUserTxtInput();
+	string output_file = getUserTxtInput("to write the decision tree to");
 
 	// walk the tree and output it to the given output_file
 	outputTree(tree, output_file);
@@ -221,7 +256,9 @@ vector<string> createPredictions(
 		TreeNode* pred_node = walkTree(predictor_indices, row, tree.getRoot()); 
 		if (pred_node == nullptr)
 		{
-			predictions.push_back(""); 
+			// if we don't recognize a predictor variable value, don't 
+			// make a prediction. push a placeholder in
+			predictions.push_back(" "); 
 		}
 		else
 		{
@@ -250,11 +287,11 @@ void predictOutcome(DecisionTree& tree)
 	vector<vector<string>> data{}; 
 	vector<string> header{}; 
 	int outcome_col = -1; 
-	getUserCsvInput(data, header, outcome_col); 
+	getUserCsvInput(data, header, outcome_col, "on which to make predictions"); 
 
 	// get output information from user
 	string output_file = ""; 
-	cout << "What is the name of the CSV file to which I can output the results? ";
+	cout << "What is the name of a CSV file to which I can output the results? ";
 	getline(cin, output_file); 
 
 	// get prediction results on data
@@ -263,6 +300,7 @@ void predictOutcome(DecisionTree& tree)
 	// write prediction results to output file
 	ofstream out_stream{ output_file }; 
 	int correct_preds = 0; 
+	int total_preds = 0; 
 	if (out_stream.is_open() == true)
 	{
 		// output header
@@ -298,6 +336,7 @@ void predictOutcome(DecisionTree& tree)
 
 			// just for fun (not required by PA): record whether this prediction was
 			// correct or not 
+			total_preds++; 
 			if (data[i][outcome_col] == predictions[i])
 			{
 				correct_preds++; 
@@ -307,11 +346,15 @@ void predictOutcome(DecisionTree& tree)
 	out_stream.close();
 
 	// calculate percentage of correct predictions
-	double percent_correct = (double(correct_preds) / data.size()) * 100; 
+	double pred_percent = (double(total_preds) / data.size()) * 100;
+	double percent_correct = (double(correct_preds) / double(total_preds)) * 100; 
 
 	cout << "Predictions were written to " << output_file << endl;
-	cout << "(fun fact: " << percent_correct << "% of predictions were correct)"
-		<< endl << endl; 
+	cout << "FUN STATS:" << endl;
+	cout << "* Out of all rows in the file you gave me, I was able to make predictions for "
+		<< pred_percent << "% of them." << endl;
+	cout << "* Of those " << pred_percent << "%, I predicted " << percent_correct 
+		<< "% correctly." << endl << endl; 
 	return; 
 }
 
@@ -373,7 +416,6 @@ TreeNode* treeFromText(string in_file)
 				}
 			}
 		}
-		
 	}
 	in_stream.close(); 
 	return root; 
@@ -384,7 +426,7 @@ TreeNode* treeFromText(string in_file)
 DecisionTree readTreeFromFile()
 {
 	// get user input 
-	string file_name = getUserTxtInput(); 
+	string file_name = getUserTxtInput("to build a tree from"); 
 
 	// construct tree from input file 
 	DecisionTree tree{ treeFromText(file_name) };
@@ -394,35 +436,6 @@ DecisionTree readTreeFromFile()
 
 int main(void)
 {
-	/*
-	CsvStateMachine parser{ "easy data set.csv" };
-	vector<vector<string>> data{}; 
-	data = parser.processFile(); 
-	vector<string> header = data[0]; 
-
-		/*
-	// NOTE: very slow! 
-	// to make this more algorithmically efficient, PLEASE use STL move  
-	// to move array elements 1...size() to another structure --> near-instant, says Adam 
-	//data.erase(data.begin()); 
-
-	// move the header vector to its own vector, leaving data as a vector 
-	// of vectors with pure data
-	vector<string> header{};
-	header = move(data[0]);
-	data.erase(data.begin()); 
-
-	// build a decision tree from the given data & header, where 
-	// header[4] is the outcome variable
-	DecisionTree tree{}; 
-	tree.buildTree(data, header, 4); 
-
-	// My job: data management 
-	/* Prompt user for predictor column
-	Run prediction algorithm on 20 % CSV
-	Re-run on 80% and see if it matches, and if so, how often was it correct? 
-	*/
-
 	bool keep_running = true; 
 	DecisionTree program_tree{};
 
@@ -434,10 +447,11 @@ int main(void)
 		cout << "2: Write decision tree to file " << endl;
 		cout << "3: Predict outcome " << endl;
 		cout << "4: Read tree from file " << endl;
-		cout << "(or enter anything else to exit)" << endl;
+		cout << "(or enter anything else to exit): ";
 		string option = "";
 		cin >> option;
 		cin.ignore();
+		cout << endl; 
 
 		// option 1: build a decision tree from user-supplied file
 		if (option == "1")
@@ -462,6 +476,7 @@ int main(void)
 		{
 			program_tree = readTreeFromFile(); 
 		}
+
 		else
 		{
 			keep_running = false; 

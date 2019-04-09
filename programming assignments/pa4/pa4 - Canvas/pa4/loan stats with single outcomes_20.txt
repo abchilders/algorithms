@@ -1,0 +1,8 @@
+NULL|debt to income|135
+13|state|49
+22|state|48
+54|C|0
+18|state|49
+21|state|48
+15|state|48
+8|earliest credit|44

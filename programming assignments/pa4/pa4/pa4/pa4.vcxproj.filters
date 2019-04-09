@@ -29,9 +29,6 @@
     <ClInclude Include="DecisionTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StringSplitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,13 +49,17 @@
     <None Include="loan stats with single outcomes_80.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="easy data set out.csv">
+    <None Include="tip_redshirt.csv">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="easy data set.txt">
+    <None Include="tire_reliability.csv">
       <Filter>Resource Files</Filter>
-    </Text>
+    </None>
+    <None Include="bank-additional.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bank-additional-full.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

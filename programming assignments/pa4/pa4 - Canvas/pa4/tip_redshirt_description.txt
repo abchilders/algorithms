@@ -1,0 +1,28 @@
+Description from http://users.stat.ufl.edu/~winner/data/tip_redshirt.txt --
+
+Dataset:  tip_redshirt.csv
+
+Source: N. Gueguen and C. Jacob (2014). "Clothing Color and Tipping:
+Gentlemen Patrons Give More Tips to Waitresses with Red Clothes,"
+Journal of Hospitality & Tourism Research, Vol. 38, #2, pp. 275-280.
+
+Description: Results of a field experiment in France to relate incidence
+of tipping (they have a mandatory service fee) to gender of customer
+and color of waitresses' t-shirt (Black, White, Red, Yellow, Green, Blue)
+
+Variable Names
+color
+sampsz    /* number in the color/gender combination */
+tipnum    /* number tipping in   "         #        */
+male      /* 1 if customer Male, 0 if female */
+black     /* 1 if waitress wore black shirt, 0 otherwise  */
+white     /* 1 "    "       "   white   "    "    "       */
+yellow    /* 1 "    "       "   yellow  "    "    "       */
+blue      /* 1 "    "       "   blue    "    "    "       */
+green     /* 1 "    "       "   green   "    "    "       */
+
+==
+
+The journal article using this data:
+https://journals.sagepub.com/doi/full/10.1177/1096348012442546
+

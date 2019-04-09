@@ -1,0 +1,24 @@
+Description from http://users.stat.ufl.edu/~winner/data/tire_reliability.txt --
+
+Dataset: tire_reliability.csv
+
+Source: V.V. Kristov, D.E. Tanako, T.P. Davis (2002). "Regression Approach
+to Tire Reliability Analysis," Reliability Engineering and System Safety,
+Vol. 78, pp. 267-273.
+
+Description: Study to compare tire survival as a function of:
+Tire Age  (tireAge)
+Wedge gauge   (wedge)
+Interbelt Gauge  (interBelt)
+EB2B
+Peel Force    (peelForce)
+Carbon Black %   (crbnBlk)
+Survival    (suvival)
+Censoring indicator w/ 1=Complete, 0=censored    (complete)
+Authors fit proportional hazards regression. 
+Data are coded for confidentiality.
+
+=====
+
+The journal article using this data:
+https://www.math.ntnu.no/emner/TMA4275/2009v/CoxReliabilityExample.pdf
