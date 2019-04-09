@@ -1,0 +1,11 @@
+NULL|debt to income|64
+34|state|21
+3|state|15
+19|earliest credit|28
+20|state|35
+28|state|23
+11|state|26
+68|C|0
+33|C|0
+4|emp_length|8
+15|state|32

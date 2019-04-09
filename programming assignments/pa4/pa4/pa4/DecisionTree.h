@@ -195,7 +195,7 @@ public:
 
 		// attach as children all levels of outcome
 		vector<string> selected_observations = getObservations(matrix, col);
-		auto selected_levels = buildFrequencyDistribution(selected_observations);
+		auto selected_levels = buildFrequencyDistribution(selected_observations); 
 
 		// for each predictor 
 		for (auto level : selected_levels)
