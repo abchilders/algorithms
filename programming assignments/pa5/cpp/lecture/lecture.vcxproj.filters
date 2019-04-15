@@ -20,8 +20,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data.csv">
+    <Text Include="words.txt">
       <Filter>Resource Files</Filter>
-    </None>
+    </Text>
+    <Text Include="sample1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="sample2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
