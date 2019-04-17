@@ -4,7 +4,7 @@ Description: This suggests corrections for misspelled words of an input file,
 	and outputs the corrected text to an output file.
 Author: Alex Childers 
 HSU ID: 013145324
-Completion time: 1.25 + 15:00 - 
+Completion time: 3 hours
 In completing this program, I received help from the following people:
 	N/A
 */
