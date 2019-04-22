@@ -119,11 +119,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="WordStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample1.txt" />
     <Text Include="sample2.txt" />
     <Text Include="words.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StringSplitter.h" />
+    <ClInclude Include="WordStorage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

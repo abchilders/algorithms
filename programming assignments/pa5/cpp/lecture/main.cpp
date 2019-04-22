@@ -4,10 +4,12 @@ Description: This suggests corrections for misspelled words of an input file,
 	and outputs the corrected text to an output file.
 Author: Alex Childers 
 HSU ID: 013145324
-Completion time: 3 hours
+Completion time: 3 hours + 10:30 - 
 In completing this program, I received help from the following people:
 	N/A
 */
+
+// RE-ADD WORDSTORAGE.H WHEN I'M READY 
 
 /* To do:
 3.) For each misspelled word:
@@ -37,13 +39,28 @@ In completing this program, I received help from the following people:
 #include <fstream>
 #include <algorithm>
 #include <unordered_map> 
+#include <sstream>
+#include "StringSplitter.h"
 
 // to use ispunct() function 
 #include <cctype> 
 
 using namespace std;
 
+// the name of the dictionary file 
 const string DICTIONARY = "words.txt"; 
+
+// the suffix of files holding autocorrect results for each word 
+const string FILE_SUFFIX = ".dat"; 
+
+class PairComparer
+{
+public:
+	bool operator()(pair<string, int> first, pair<string, int> second)
+	{
+		return first.second > second.second; 
+	}
+};
 
 int calculateEditDistance(const string& first, const string& second)
 {
@@ -86,14 +103,38 @@ int calculateEditDistance(const string& first, const string& second)
 
          int best_choice = min(top_cost, min(left_cost, diagonal_cost));
 
-         
-
          //store result in current cell
          matrix[i][j] = best_choice;
       }
    }
 
    return matrix[matrix.size() - 1][matrix[0].size() - 1];
+}
+
+// removes punctuation from the beginning and end of a string; returns the 
+// punctuation that was removed from either end 
+pair<string, string> removePuncts(string& word)
+{
+	ostringstream begin_punct{};
+	bool punct = ispunct(word[0]); 
+	while(ispunct(word[0]))
+	{
+		// record punctuation so that we can re-add it later 
+		begin_punct << word[0];
+		word.erase(word.begin());
+	}
+	string str_start = begin_punct.str();
+
+	ostringstream end_punct{};
+	while(ispunct(word[word.length() - 1]))
+	{
+		end_punct << word[word.length() - 1];
+		word.erase(word.end() - 1); 
+	}
+	string str_end = end_punct.str(); 
+	reverse(str_end.begin(), str_end.end());
+	
+	return make_pair(str_start, str_end); 
 }
 
 int main(void)
@@ -148,84 +189,62 @@ int main(void)
 		// check for misspelled words
 		while (in_stream.good() == true)
 		{
-			string next_word = ""; 
-			in_stream >> next_word;  
-			
-			/* Punctuation rules:
-				- Remove any non-apostrophe punctuation marks from the 
-					front and back. 
-				- If there is an apostrophe at both the back and 
-						the front of the string, remove them.
-						e.g: 'hello', 'oy'
-						Note that this won't work for a contraction like
-						'n', but IMO, that's an exceptional case so whatever.
-				- Otherwise, the punctuation is part of the word. 
-						Keep it. 
-						e.g: 'twas, she's, y'all'dn't've'f'i'd'nt, 
-							back-to-back, string.length()
-						(since I'm too lazy to code exceptions for 
-						hyphenated words, we'll treat compound words as one 
-						word) 
-				- BUT WHAT IF THERE'S MULTIPLE PUNCTUATION CHARACTERS NEXT
-					TO EACH OTHER? e.g. (), ..., !!!
-			*/
+			// remember the current line of text for context 
+			string context_line = ""; 
+			getline(in_stream, context_line); 
 
-			// remove punctuation according to above rules 
-			unordered_map<int, char> removed_puncts{}; 
-			for (int i = 0; i < next_word.length(); i++)
+			// consider each word in the current line
+			vector<string> words = StringSplitter::split(context_line, " "); 
+			for(auto next_word: words)
 			{
-				if (ispunct(next_word[i]))
+				// remove punctuation
+				pair<string, string> punct = removePuncts(next_word); 
+
+				// is the next word misspelled? check if it exists in 
+				// dictionary. if not, we need to compute edit distances and 
+				// correct before outputting to file 
+				auto found = find(dictionary.begin(), dictionary.end(), next_word); 
+				if (found != dictionary.end())
 				{
-					// remove all punctuation marks from front and back,
-					// IF they're not apostrophes 
-					if (i == 0 && next_word[i] != '\'')
-					{
-						removed_puncts[i] = next_word[i]; 
-					}
-					else if ((i == next_word.length() - 1)
-						&& next_word[i] != '\'')
-					{
-						removed_puncts[i] = next_word[i]; 
-					}
-					// what if the first character IS an apostrophe? 
-					// then remember to remove them both 
-					else if (i == 0 && next_word[i] == '\''
-						&& next_word[next_word.length() - 1] == '\'')
-					{
-						removed_puncts[i] = next_word[i]; 
-						removed_puncts[next_word.length() - 1] =
-							next_word[next_word.length() - 1];
-					}
-					// or, if we've in the middle of the word and the 
-					// punctuation is not an apostrophe, remove the 
-					// punctuation and remember to correct the pieces
-					// of the word before and after the punctuation 
-
-					// TO DO: IMPLEMENT THAT LAST CASE OF PUNCTUATION RULES 
+					// word exists in dictionary, so output to file 
+					out_stream << punct.first << next_word << punct.second << " "; 
 				}
+				else
+				{
+					// word is misspelled. compute edit distance for all
+					// words in dictionary 
+					priority_queue<pair<string, int>,
+						vector<pair<string, int>>,
+						PairComparer> edit_distances{};
 
-			}
+					for (auto dict_word : dictionary)
+					{
+						int distance = calculateEditDistance(next_word, dict_word);
+						edit_distances.push(make_pair(dict_word, distance));
+					}
 
-
-			// is the next word misspelled? check if it exists in 
-			// dictionary. if not, we need to compute edit distances and 
-			// correct before outputting to file 
-			auto found = find(dictionary.begin(), dictionary.end(), next_word); 
-			if (found != dictionary.end())
-			{
-				// word exists in dictionary, so output to file 
-				out_stream << next_word << " "; 
-			}
-			else
-			{
-				// word is misspelled. compute edit distance for all
-				// words in dictionary 
-				
+					// now that we've calculated all edit distances, display the 
+					// 10 most probable answers. let the user pick the correct one
+					// or specify their own 
+					cout << "Unknown word: " << next_word << endl; 
+					cout << "\t Context: " << context_line << endl; 
+					cout << "Corrected word: " << endl; 
+					cout << "1. None of the words below are correct" << endl; 
+					for (int i = 2; i <= 11; i++)
+					{
+						// pop the next closest word from the queue 
+						string corrected = edit_distances.top().first; 
+						edit_distances.pop(); 
+						cout << i << ". " << corrected << endl; 
+					}
+				} 
 			}
 		}
 	}
 
 	// test 
+	string hello = "...$hello??,,";
+	pair<string, string> test = removePuncts(hello);
    cout << calculateEditDistance("dog", "frog") << endl;
    return 0;
 }
