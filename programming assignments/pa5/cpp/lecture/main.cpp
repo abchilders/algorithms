@@ -4,7 +4,7 @@ Description: This suggests corrections for misspelled words of an input file,
 	and outputs the corrected text to an output file.
 Author: Alex Childers 
 HSU ID: 013145324
-Completion time: 3 hours + 10:30 - 
+Completion time: 5.5 hours + 17:30 - 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -233,14 +233,24 @@ int main(void)
 					for (int i = 2; i <= 11; i++)
 					{
 						// pop the next closest word from the queue 
-						string corrected = edit_distances.top().first; 
+						pair<string, int> corrected_word = edit_distances.top();
+						string corrected = corrected_word.first; 
 						edit_distances.pop(); 
 						cout << i << ". " << corrected << endl; 
 					}
+
+					int choice = 0; 
+					cout << "Enter selection: "; 
+					cin >> choice; 
+
+					// respond to user's choice of correct spelling 
 				} 
 			}
 		}
 	}
+
+	in_stream.close();
+	out_stream.close(); 
 
 	// test 
 	string hello = "...$hello??,,";
