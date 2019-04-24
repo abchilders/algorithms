@@ -4,7 +4,7 @@ Description: This suggests corrections for misspelled words of an input file,
 	and outputs the corrected text to an output file.
 Author: Alex Childers 
 HSU ID: 013145324
-Completion time: 5.5 hours + 17:30 - 
+Completion time: 6 hours + 9:15 - 
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -211,39 +211,90 @@ int main(void)
 				}
 				else
 				{
-					// word is misspelled. compute edit distance for all
-					// words in dictionary 
-					priority_queue<pair<string, int>,
-						vector<pair<string, int>>,
-						PairComparer> edit_distances{};
+					vector<pair<string, int>> corrected_words{}; 
 
-					for (auto dict_word : dictionary)
+					// word is misspelled. do we already have a list of 
+					// autocorrects for it?
+					ifstream autocorrects{ next_word + FILE_SUFFIX }; 
+					if (autocorrects.is_open() == true)
 					{
-						int distance = calculateEditDistance(next_word, dict_word);
-						edit_distances.push(make_pair(dict_word, distance));
+						while (autocorrects.good() == true)
+						{
+							// get each line and place into vector
+							string word_line = ""; 
+							autocorrects >> word_line; 
+							vector<string> line = StringSplitter::split(word_line, " ");
+
+							// just in case we have space-separated compound words
+							// (e.g. real estate), only separate the last word
+							// representing edit distance from the rest of the line 
+							ostringstream file_word{};
+							for (int i = 0; i < line.size() - 1; i++)
+							{
+								file_word << line[i] << " "; 
+							}
+							int distance = stoi(line[line.size() - 1]);
+
+							corrected_words.push_back(make_pair
+								(file_word.str(), distance)); 
+						}
+					}
+					else
+					{
+						// compute edit distance for all
+						// words in dictionary 
+						priority_queue<pair<string, int>,
+							vector<pair<string, int>>,
+							PairComparer> edit_distances{};
+
+						for (auto dict_word : dictionary)
+						{
+							int distance = calculateEditDistance(next_word, dict_word);
+							edit_distances.push(make_pair(dict_word, distance));
+						}
+
+						// put 10 words with lowest edit distances into vector
+						for (int i = 0; i < 10; i++)
+						{
+							corrected_words.push_back(edit_distances.top());
+							edit_distances.pop(); 
+						}
 					}
 
-					// now that we've calculated all edit distances, display the 
-					// 10 most probable answers. let the user pick the correct one
-					// or specify their own 
-					cout << "Unknown word: " << next_word << endl; 
-					cout << "\t Context: " << context_line << endl; 
-					cout << "Corrected word: " << endl; 
-					cout << "1. None of the words below are correct" << endl; 
-					for (int i = 2; i <= 11; i++)
+					// display the 10 most probable answers. let the user pick the 
+					// correct one or specify their own 
+					cout << "Unknown word: " << next_word << endl;
+					cout << "\t Context: " << context_line << endl;
+					cout << "Corrected word: " << endl;
+					cout << "1. None of the words below are correct" << endl;
+					int numbering = 2; 
+					for (auto word_pair : corrected_words)
 					{
-						// pop the next closest word from the queue 
-						pair<string, int> corrected_word = edit_distances.top();
-						string corrected = corrected_word.first; 
-						edit_distances.pop(); 
-						cout << i << ". " << corrected << endl; 
+						string word = word_pair.first; 
+						cout << numbering << ". " << word << endl; 
 					}
 
-					int choice = 0; 
-					cout << "Enter selection: "; 
-					cin >> choice; 
+					int choice = 0;
+					cout << "Enter selection: ";
+					cin >> choice;
 
-					// respond to user's choice of correct spelling 
+					// make sure input is valid 
+					while (choice > corrected_words.size() + 1)
+					{
+						cout << "Enter selection: "; 
+						cin >> choice; 
+					}
+
+					if (choice == 1)
+					{
+						// TO DO: record user-defined word
+					}
+					else
+					{
+						pair<string, int> best_word = corrected_words[choice - 2]; 
+						corrected_words.erase(corrected_words.begin() + (choice - 3));
+						corrected_words.insert(corrected_words.begin(), best_word); 
+					}
 				} 
 			}
 		}
