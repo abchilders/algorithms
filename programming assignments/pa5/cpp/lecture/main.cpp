@@ -4,7 +4,7 @@ Description: This suggests corrections for misspelled words of an input file,
 	and outputs the corrected text to an output file.
 Author: Alex Childers 
 HSU ID: 013145324
-Completion time: 6 hours + 9:15 - 
+Completion time: 9 hours
 In completing this program, I received help from the following people:
 	N/A
 */
@@ -12,24 +12,10 @@ In completing this program, I received help from the following people:
 // RE-ADD WORDSTORAGE.H WHEN I'M READY 
 
 /* To do:
-3.) For each misspelled word:
-	a.) Compute the 10 most probable suggestions based on edit distance.
-		Also, provide an opportunity for the user to specify their own 
-		autocorrected answer.
-		*** make sure the program gracefully handles improper user input
-	b.) Having obtained the correct spelling, place the correct spelling
-		at the top of the list (such that, next time we see this misspelling,
-		it's the first suggestion made by the autocorrect). 
-	c.) Save the autocorrect results to a file (so that, when we 
-		encounter the misspelling again, we don't have to recompute all of 
-		the distances. 
-4.) Once all the misspelled words have been corrected, write the corrected
-	text to the user-specified output file. 
-
-* Check for punctuation. Decide my rules for which punctuation to ELIMINATE
-	and which to keep. 
-	- I've typed punctuation rules below, implement them.
-	- It's worth looking into string::insert and related string functions. 
+	-Abstraction! Re-add WordStorage.h and abstract out as needed.
+	-Review PA5.docx to make sure I've met all specifications.
+	-Write PA 5 reflection. 
+	-Clean up code, and refactor if time. 
 */
 
 #include <queue>
@@ -125,6 +111,13 @@ pair<string, string> removePuncts(string& word)
 	}
 	string str_start = begin_punct.str();
 
+	// if there are no chars left in word after removing punctuation,
+	// the whole "word" is just punctuation. stop here 
+	if (word == "")
+	{
+		return make_pair(str_start, ""); 
+	}
+
 	ostringstream end_punct{};
 	while(ispunct(word[word.length() - 1]))
 	{
@@ -166,11 +159,12 @@ int main(void)
 	getline(cin, output_file); 
 
 	// open input and output streams 
-	ifstream in_stream{ input_file };
-	ofstream out_stream{ output_file }; 
+	ifstream in_stream{ input_file }; 
 
 	if (in_stream.is_open() == true)
 	{
+		ofstream out_stream{ output_file }; 
+
 		// check for misspelled words
 		while (in_stream.good() == true)
 		{
@@ -184,6 +178,13 @@ int main(void)
 			{
 				// remove punctuation
 				pair<string, string> punct = removePuncts(next_word); 
+
+				// is the entire "word" just punctuation?
+				if (punct.second == "")
+				{
+					out_stream << punct.first << " "; 
+					continue; 
+				}
 
 				// is the next word misspelled? check if it exists in 
 				// dictionary. if not, we need to compute edit distances and 
@@ -274,7 +275,7 @@ int main(void)
 						numbering++; 
 					}
 
-					string choice_str = 0;
+					string choice_str = "";
 					cout << "Enter selection: ";
 					getline(cin, choice_str); 
 					int choice = stoi(choice_str); 
@@ -321,14 +322,13 @@ int main(void)
 				}
 			}
 		}
+		out_stream.close(); 
 	}
-
+	else
+	{
+		cout << "Failed to open file " << input_file << "." << endl; 
+	}
 	in_stream.close();
-	out_stream.close(); 
 
-	// test 
-	string hello = "...$hello??,,";
-	pair<string, string> test = removePuncts(hello);
-   cout << calculateEditDistance("dog", "frog") << endl;
-   return 0;
+	return 0;
 }
