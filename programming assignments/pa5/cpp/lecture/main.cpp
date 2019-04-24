@@ -257,11 +257,6 @@ int main(void)
 							}
 							edit_distances.pop(); 
 						}
-						/*for (int i = 0; i < 10; i++)
-						{
-							corrected_words.push_back(edit_distances.top());
-							edit_distances.pop(); 
-						}*/
 					}
 					autocorrects.close(); 
 
@@ -279,15 +274,17 @@ int main(void)
 						numbering++; 
 					}
 
-					int choice = 0;
+					string choice_str = 0;
 					cout << "Enter selection: ";
-					cin >> choice;
+					getline(cin, choice_str); 
+					int choice = stoi(choice_str); 
 
 					// make sure input is valid 
 					while (choice > corrected_words.size() + 1)
 					{
 						cout << "Enter selection: "; 
-						cin >> choice; 
+						getline(cin, choice_str);
+						choice = stoi(choice_str); 
 					}
 
 					string right_word = ""; 
@@ -303,9 +300,7 @@ int main(void)
 					{
 						pair<string, int> best_word = corrected_words[choice - 2]; 
 						right_word = best_word.first; 
-						
-						// OUT OF RANGE ERROR HERE- CONTINUE HERE
-						corrected_words.erase(corrected_words.begin() + (choice - 3));
+						corrected_words.erase(corrected_words.begin() + (choice - 2));
 						corrected_words.insert(corrected_words.begin(), best_word); 
 					}
 
