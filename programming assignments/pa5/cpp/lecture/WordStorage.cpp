@@ -45,8 +45,6 @@ int WordStorage::calculateEditDistance(const string& first, const string& second
 
 			int best_choice = min(top_cost, min(left_cost, diagonal_cost));
 
-
-
 			//store result in current cell
 			matrix[i][j] = best_choice;
 		}
@@ -55,13 +53,41 @@ int WordStorage::calculateEditDistance(const string& first, const string& second
 	return matrix[matrix.size() - 1][matrix[0].size() - 1];
 }
 
-void WordStorage::getUserStorage()
+pair<string, string> WordStorage::removePuncts(string& word)
 {
-	//contains our dictionary 
-	vector<string> dictionary{};
+	ostringstream begin_punct{};
+	bool punct = ispunct(word[0]);
+	while (ispunct(word[0]))
+	{
+		// record punctuation so that we can re-add it later 
+		begin_punct << word[0];
+		word.erase(word.begin());
+	}
+	string str_start = begin_punct.str();
 
+	// if there are no chars left in word after removing punctuation,
+	// the whole "word" is just punctuation. stop here 
+	if (word == "")
+	{
+		return make_pair(str_start, "");
+	}
+
+	ostringstream end_punct{};
+	while (ispunct(word[word.length() - 1]))
+	{
+		end_punct << word[word.length() - 1];
+		word.erase(word.end() - 1);
+	}
+	string str_end = end_punct.str();
+	reverse(str_end.begin(), str_end.end());
+
+	return make_pair(str_start, str_end);
+}
+
+void WordStorage::readDictionary(string dict_file)
+{
 	// read the words.txt dictionary into the program 
-	ifstream words{ _DICTIONARY };
+	ifstream words{ dict_file };
 	if (words.is_open() == true)
 	{
 		while (words.good() == true)
@@ -69,23 +95,85 @@ void WordStorage::getUserStorage()
 			// read dictionary words into vector
 			string next_word = "";
 			words >> next_word;
-			dictionary.push_back(next_word);
+			_dictionary.push_back(next_word);
 		}
 	}
 	words.close();
+	return;
+}
 
-	// prompt the user for basic file store or load/store in database
-	string storage_method = "";
-	cout << "Would you like to store autocorrect results to a file or to "
-		<< "a database? " << endl;
-	cout << "Enter 1 for file, or 2 for database" << endl;
-	getline(cin, storage_method);
+// computes the 10 most probable suggestions for a word based
+// on edit distance
+vector<pair<string, int>>* WordStorage::computeTopTenWords(
+	string& next_word,
+	string correct_file_suffix)
+{
+	vector<pair<string, int>>* corrected_words{};
 
-	// for now, we'll just default to file storage until DB functionality
-	// is implemented
-	if (storage_method == "2")
+	// word is misspelled. do we already have a list of 
+	// autocorrects for it?
+	string corrections_file = next_word + correct_file_suffix;
+	ifstream autocorrects{ corrections_file };
+	if (autocorrects.is_open() == true)
 	{
-		cout << "Database functionality not available yet. Will store "
-			<< "autocorrect results to a file." << endl;
+		while (autocorrects.good() == true)
+		{
+			// get each line and place into vector
+			string word_line = "";
+			getline(autocorrects, word_line);
+			if (word_line != "" && word_line != " ")
+			{
+				vector<string> line = StringSplitter::split(word_line, " ");
+
+				// just in case we have space-separated compound words
+				// (e.g. real estate), only separate the last word
+				// representing edit distance from the rest of the line 
+				ostringstream file_word{};
+				for (int i = 0; i < line.size() - 2; i++)
+				{
+					file_word << line[i] << " ";
+				}
+				file_word << line[line.size() - 2];
+				int distance = stoi(line[line.size() - 1]);
+
+				corrected_words->push_back(make_pair
+				(file_word.str(), distance));
+			}
+		}
 	}
+	else
+	{
+		// compute edit distance for all
+		// words in dictionary 
+		priority_queue<pair<string, int>,
+			vector<pair<string, int>>,
+			PairComparer> edit_distances{};
+
+		for (auto dict_word : _dictionary)
+		{
+			int distance = calculateEditDistance(next_word, dict_word);
+			edit_distances.push(make_pair(dict_word, distance));
+		}
+
+		// put 10 words with lowest edit distances into vector
+		int counter = 0;
+		while (counter < 10)
+		{
+			pair<string, int> next_lowest = edit_distances.top();
+
+			// does this word already exist in vector?
+			auto found = find(corrected_words->begin(),
+				corrected_words->end(),
+				next_lowest);
+			if (found == corrected_words->end())
+			{
+				// if not, add it 
+				corrected_words->push_back(next_lowest);
+				counter++;
+			}
+			edit_distances.pop();
+		}
+	}
+	autocorrects.close();
+	return corrected_words; 
 }
