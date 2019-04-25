@@ -33,7 +33,8 @@ public:
 	// on edit distance
 	vector<pair<string, int>>* computeTopTenWords(
 		string& next_word,
-		string correct_file_suffix); 
+		string correct_file_suffix,
+		vector<pair<string, int>>& corrected_words); 
 
 	// records the correct spelling of a word as given by the user
 	void recordCorrectSpelling(); 

@@ -106,10 +106,9 @@ void WordStorage::readDictionary(string dict_file)
 // on edit distance
 vector<pair<string, int>>* WordStorage::computeTopTenWords(
 	string& next_word,
-	string correct_file_suffix)
+	string correct_file_suffix,
+	vector<pair<string, int>>& corrected_words)
 {
-	vector<pair<string, int>>* corrected_words{};
-
 	// word is misspelled. do we already have a list of 
 	// autocorrects for it?
 	string corrections_file = next_word + correct_file_suffix;
@@ -136,7 +135,7 @@ vector<pair<string, int>>* WordStorage::computeTopTenWords(
 				file_word << line[line.size() - 2];
 				int distance = stoi(line[line.size() - 1]);
 
-				corrected_words->push_back(make_pair
+				corrected_words.push_back(make_pair
 				(file_word.str(), distance));
 			}
 		}
@@ -162,18 +161,18 @@ vector<pair<string, int>>* WordStorage::computeTopTenWords(
 			pair<string, int> next_lowest = edit_distances.top();
 
 			// does this word already exist in vector?
-			auto found = find(corrected_words->begin(),
-				corrected_words->end(),
+			auto found = find(corrected_words.begin(),
+				corrected_words.end(),
 				next_lowest);
-			if (found == corrected_words->end())
+			if (found == corrected_words.end())
 			{
 				// if not, add it 
-				corrected_words->push_back(next_lowest);
+				corrected_words.push_back(next_lowest);
 				counter++;
 			}
 			edit_distances.pop();
 		}
 	}
 	autocorrects.close();
-	return corrected_words; 
+	return;
 }

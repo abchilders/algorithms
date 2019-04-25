@@ -210,8 +210,10 @@ int main(void)
 					autocorrects.close();
 					*/
 
-					vector<pair<string, int>>* corrected_words = correct_words.computeTopTenWords(
-						next_word, FILE_SUFFIX, dictionary); 
+					vector<pair<string, int>> corrected_words{}; 
+					correct_words.computeTopTenWords(next_word, FILE_SUFFIX, corrected_words); 
+
+					// CONTINUE HERE 
 
 					// display the 10 most probable answers. let the user pick the 
 					// correct one or specify their own 
