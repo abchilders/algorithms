@@ -106,12 +106,11 @@ void WordStorage::readDictionary(string dict_file)
 // on edit distance
 vector<pair<string, int>>* WordStorage::computeTopTenWords(
 	string& next_word,
-	string correct_file_suffix,
+	string& corrections_file,
 	vector<pair<string, int>>& corrected_words)
 {
 	// word is misspelled. do we already have a list of 
 	// autocorrects for it?
-	string corrections_file = next_word + correct_file_suffix;
 	ifstream autocorrects{ corrections_file };
 	if (autocorrects.is_open() == true)
 	{
@@ -175,4 +174,86 @@ vector<pair<string, int>>* WordStorage::computeTopTenWords(
 	}
 	autocorrects.close();
 	return;
+}
+
+// records the correct spelling of a word as given by the user
+string WordStorage::recordCorrectSpelling(string& next_word, string& context_line,
+	vector<pair<string, int>>& corrected_words)
+{
+	// display the 10 most probable answers. let the user pick the 
+					// correct one or specify their own 
+	cout << "Unknown word: " << next_word << endl;
+	cout << "\t Context: " << context_line << endl;
+	cout << "Corrected word: " << endl;
+	cout << "1. None of the words below are correct" << endl;
+	int numbering = 2;
+	for (auto word_pair : corrected_words)
+	{
+		string word = word_pair.first;
+		cout << numbering << ". " << word << endl;
+		numbering++;
+	}
+
+	string choice_str = "";
+	cout << "Enter selection: ";
+	getline(cin, choice_str);
+	int choice = stoi(choice_str);
+
+	// make sure input is valid 
+	while (choice > corrected_words.size() + 1)
+	{
+		cout << "Enter selection: ";
+		getline(cin, choice_str);
+		choice = stoi(choice_str);
+	}
+
+	string right_word = "";
+	if (choice == 1)
+	{
+		// record user-defined word 
+		cout << "Enter corrected word: ";
+		getline(cin, right_word);
+		pair<string, int> new_word = make_pair(right_word, 0);
+		corrected_words.insert(corrected_words.begin(), new_word);
+	}
+	else
+	{
+		pair<string, int> best_word = corrected_words[choice - 2];
+		right_word = best_word.first;
+		corrected_words.erase(corrected_words.begin() + (choice - 2));
+		corrected_words.insert(corrected_words.begin(), best_word);
+	}
+	return right_word; 
+}
+
+// outputs autocorrect results for a word to a file 
+void WordStorage::outputAutoCorrects(string& corrections_file,
+	vector<pair<string, int>>& corrected_words)
+{
+	// output list of autocorrects to file 
+	ofstream new_autocorrects{ corrections_file };
+	if (new_autocorrects.is_open() == true)
+	{
+		for (auto word_pair : corrected_words)
+		{
+			new_autocorrects << word_pair.first << " "
+				<< word_pair.second << endl;
+		}
+	}
+	new_autocorrects.close();
+	return; 
+}
+
+// returns true if next_word exists in the dictionary
+bool WordStorage::wordExistsInDict(string& next_word)
+{
+	auto found = find(_dictionary.begin(), _dictionary.end(), next_word);
+	if (found == _dictionary.end())
+	{
+		return false; 
+	}
+	else
+	{
+		return true; 
+	}
 }

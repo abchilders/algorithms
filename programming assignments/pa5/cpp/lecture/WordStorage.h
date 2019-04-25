@@ -14,10 +14,7 @@ class WordStorage
 {
 private:
 	vector<string> _dictionary{}; 
-
-	// removes punctation marks from the beginning and end of word;
-	// returns each set of punctuation marks 
-	pair<string, string> removePuncts(string& word); 
+ 
 public:
 	// calculates the edit distance between two words 
 	int calculateEditDistance(const string& first, const string& second);
@@ -33,17 +30,26 @@ public:
 	// on edit distance
 	vector<pair<string, int>>* computeTopTenWords(
 		string& next_word,
-		string correct_file_suffix,
+		string& corrections_file,
 		vector<pair<string, int>>& corrected_words); 
 
 	// records the correct spelling of a word as given by the user
-	void recordCorrectSpelling(); 
+	string recordCorrectSpelling(string& next_word, string& context_line, 
+		vector<pair<string, int>>& corrected_words); 
 
 	// outputs autocorrect results for a word to a file 
-	void outputAutoCorrects(); 
+	void outputAutoCorrects(string& corrections_file, 
+		vector<pair<string, int>>& corrected_words); 
 
 	// outputs corrected text to the user-specified output file 
 	void outputCorrectedText(); 
+
+	// returns true if next_word exists in the dictionary
+	bool wordExistsInDict(string& next_word); 
+
+	// removes punctation marks from the beginning and end of word;
+	// returns each set of punctuation marks 
+	pair<string, string> removePuncts(string& word);
 };
 
 class PairComparer
