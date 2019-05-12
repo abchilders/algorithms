@@ -6,7 +6,8 @@ Author: Alex Childers
 HSU ID: 013145324
 Completion Time: 14:00 - 
 In completing this program, I received help from the following people:
-	N/A
+	Sanfoundry.com - fixed matrix multiplication function: 
+		https://www.sanfoundry.com/cpp-program-perform-matrix-multiplication/
 */
 
 #include <iostream>
