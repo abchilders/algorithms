@@ -17,7 +17,12 @@ In completing this program, I received help from the following people:
 #include <sstream>
 #include "StringSplitter.h"
 #include "HammingCodes.h"
+
 using namespace std;
+
+/*
+Reflection suggestion: make it clear which way to rotate the parity vector 
+*/
 
 /* OUTLINE
 To encode a file:
