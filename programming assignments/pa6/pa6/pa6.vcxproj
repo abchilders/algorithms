@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample - Copy.txt" />
+    <Text Include="sample.decoded.txt" />
     <Text Include="sample.txt" />
     <Text Include="sample_garbled.decoded.txt" />
   </ItemGroup>

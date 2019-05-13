@@ -9,53 +9,18 @@
 
 #include <string>
 #include <fstream>
-
-/* OUTLINE
-To encode a file:
-- Open an input file.
-- Open an output file, [filename].coded
-- For each character "char" in the input file:
-	- Split char into two 4-bit sequences: a high and a low
-	- Encode the high using the Hamming function, with the empty bit
-		as the FIRST bit.
-	- Output this encoding to [filename].coded
-	- Encode the low using the Hamming function, with the empty bit as the
-		FIRST bit as well.
-	- Output this encoding to [filename].coded
-
-To decode a file: 
-- Open an input file with codes: [rootname].[ext].coded 
-- Remove the suffix(es) from the file name. Call this [rootname]
-- Open an output file, [rootname].decoded.[ext]
-- Asked user to decode? = false. 
-- Should you decode? = false. 
-- For every byte in the input file:
-	- Check its error status. 
-		- Convert byte to byte matrix. 
-		- Multiply parity check matrix by byte matrix to get parity vector. 
-		- Convert parity vector to binary number. 
-		- If parity != 0:
-			-If "asked user to decode?" = false: 
-				- Tell user that file is corrupted. 
-				- Ask user if they'd like to decode, with the acknowledgement that
-					the decode may be incorrect. 
-				- Set "asked user to decode?" = true. 
-					- If yes, do decode:
-					- Set "should you decode?" = true. 
-		- If "should you decode?" = true:
-			- Row [parity] of the received byte has been compromised. 
-			- Flip the bit of the [parity]th element of the byte matrix. 
-	- Extract data bits from byte matrix-- indices 2, 4, 5, 6. 
-	- Convert data bits --> short --> char. 
-	- Output char to output file. 
-*/
+#include "StringSplitter.h"
 
 class HammingCodes
 {
-//DEBUG 
-public:
-//private: 
-	vector<vector<short>> _generation_matrix{
+private: 
+	// for the purpose of creating a "decoded" file name-- which pieces 
+	// of the file name are where when split on "."? 
+	int _filename_index = 0; 
+	int _ext_index = 1; 
+
+	// used to encode bytes 
+	vector<vector<short>> _generation_matrix {
 		{ 1, 1, 0, 1 },
 		{ 1, 0, 1, 1 },
 		{ 1, 0, 0, 0 },
@@ -64,6 +29,16 @@ public:
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 },
 	};
+
+	// used to decode bytes 
+	vector<vector<short>> _parity_check_matrix{
+		{1, 0, 1, 0, 1, 0, 1},
+		{0, 1, 1, 0, 0, 1, 1},
+		{0, 0, 0, 1, 1, 1, 1}
+	}; 
+
+	// which indices of a byte matrix will the data bits be in?
+	vector<int> _data_indices = { 2, 4, 5, 6 }; 
 
 	// expects an 8-bit char; splits the char into two 4-bit 
 	// sections (high and low) and returns the two segments 
@@ -126,16 +101,25 @@ public:
 		return; 
 	}
 
+	// HEY!!!!!!!! IF THE MODULUS FUNCTION BREAKS CHECK HERE WHERE I 
+	// TRIED TO BE ABSTRACT 
+	
+	// expects an n x 1 vector; modulos all contents by 2
+	void moduloBy2(vector<vector<short>>& matrix)
+	{
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			matrix[i][0] = matrix[i][0] % 2;
+		}
+	}
+
 	// expects an n x 1 matrix that is the result of multiplying by a 
 	// generation or parity check matrix; converts this series of digits to a
 	// binary short 
 	short matrixToShort(vector<vector<short>>& matrix)
 	{
 		// modulo all numbers in vector by 2 and add to return number
-		for (int i = 0; i < matrix.size(); i++)
-		{
-			matrix[i][0] = matrix[i][0] % 2;
-		}
+		moduloBy2(matrix); 
 
 		// convert list of 1s and 0s to binary short
 		short converted = 0;
@@ -166,7 +150,141 @@ public:
 		return encoded; 
 	}
 
+	// expects a file name in the form of [name].[ext].[coded]. returns an output
+	// file name in the form [name].decoded.[txt]
+	string decodedFileName(string file_name)
+	{
+		vector<string> name_parts = StringSplitter::split(file_name, "."); 
+		return name_parts[_filename_index] + ".decoded." + name_parts[_ext_index]; 
+	}
+
+	// expects an encoded byte; returns the result of a parity check on this byte
+	short checkForErrors(vector<vector<short>>& byte_matrix)
+	{
+		// multiply parity check matrix by byte matrix to get parity vector 
+		vector<vector<short>> parity_vector = multiply(
+			_parity_check_matrix, byte_matrix); 
+		
+		// modulo the parity vector by 2
+		moduloBy2(parity_vector); 
+
+		// convert parity vector to binary number 
+		short parity = matrixToShort(parity_vector); 
+
+		//DEBUG 
+		return parity; 
+	}
+
+	// expects a matrix of size n x 1 containing 0s and 1s, and a number 
+	// representing which bit to flip. 
+	// flips the requested bit 
+	void correctMatrix(vector<vector<short>>& byte_matrix, short bit_to_flip)
+	{
+		// error checking 
+		if (bit_to_flip >= byte_matrix.size())
+		{
+			return; 
+		}
+
+		// flip 0 to 1 
+		else if (byte_matrix[bit_to_flip][0] == 0)
+		{
+			byte_matrix[bit_to_flip][0] = 1; 
+		}
+
+		// flip 1 to 0
+		else
+		{
+			byte_matrix[bit_to_flip][0] = 0; 
+		}
+		return; 
+	}
+
+	// expects nothing, returns a bool that is true if user wants
+	// the program to try decoding corrupted bits, and false 
+	// otherwise 
+	bool askUserToDecode()
+	{
+		char decode = '\0';
+		cout << "The file has been corrupted. Would you like to "
+			<< "attempt to decode the file? The results may be "
+			<< "incorrect." << endl;
+		cout << "Please enter: (y/n) ";
+		cin >> decode;
+
+		while (decode != 'y' && decode != 'n')
+		{
+			cout << "Invalid response. Please type y or n: ";
+			cin >> decode;
+		}
+
+		if (decode == 'y')
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	// expects an encoded byte, returns the decoded byte 
+	char decodeByte(char byte, bool& asked_user, bool& try_decode)
+	{
+		// convert byte to byte matrix 
+		vector<vector<short>> byte_matrix{};
+		shortToMatrix(byte, 7, byte_matrix);
+
+		// check the error status of the byte 
+		short error_status = checkForErrors(byte_matrix);
+
+		// if error status is non-zero, there's an error. 
+		if (error_status != 0)
+		{
+			
+			// ask the user if we should decode 
+			if (asked_user == false)
+			{
+				try_decode = askUserToDecode();
+				asked_user = true; 
+			}
+
+			// if the user wants us to decode, attempt to do so 
+			if (try_decode == true)
+			{
+				// flip the bit of the [parity]th element of the byte matrix 
+				correctMatrix(byte_matrix, error_status); 
+			}
+		}
+
+		// extract data bits from byte matrix
+		vector<vector<short>> data_bits{}; 
+		for (auto index : _data_indices)
+		{
+			data_bits.push_back({ byte_matrix[index][0] }); 
+		}
+
+		// convert data bits back to short/char bits 
+		char result = matrixToShort(data_bits); 
+
+		return result; 
+	}
+
 public:
+	// default constructor
+	HammingCodes()
+	{
+		_ext_index = 0;
+		_ext_index = 1; 
+	}
+
+	// constructor 
+	HammingCodes(int name_index, int ext_index)
+	{
+		_filename_index = name_index; 
+		_ext_index = ext_index; 
+	}
+
 	// expects a file name; encodes the file using Hamming Codes 
 	// and outputs the encoded file to [file_name].coded 
 	void encodeFile(string file_name)
@@ -203,6 +321,41 @@ public:
 
 	void decodeFile(string file_name)
 	{
+		// open input file 
+		ifstream in_stream{ file_name }; 
+		if (in_stream.is_open() == true)
+		{
+			// get output file name 
+			string out_file = decodedFileName(file_name); 
+			ofstream out_stream{ out_file }; 
+
+			// have we already asked the user if they want to 
+			// try decoding errors?
+			bool asked_user = false;
+
+			// does the user want us to decode?
+			bool decode_errors = false; 
+			while (in_stream.good() == true)
+			{
+				// get pair of high and low bytes 
+				char high = '\0'; 
+				char low = '\0'; 
+				in_stream >> high; 
+				in_stream >> low; 
+
+				// translate each byte, decoding as needed 
+				high = decodeByte(high, asked_user, decode_errors); 
+				low = decodeByte(low, asked_user, decode_errors); 
+
+				// combine high and low bits into one single char 
+				char converted = high << 4; 
+				converted = converted | low; 
+				out_stream << converted; 
+			}
+			out_stream.close(); 
+		}
+		in_stream.close(); 
+		return; 
 	}
 };
 

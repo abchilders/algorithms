@@ -37,6 +37,9 @@
     <Text Include="sample - Copy.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="sample.decoded.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="sample.txt.coded">
