@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HammingCodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StringSplitter.h">
@@ -38,6 +41,9 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="sample.decoded.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="test.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
