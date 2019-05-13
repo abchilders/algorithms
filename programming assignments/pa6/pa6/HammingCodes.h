@@ -107,7 +107,7 @@ private:
 	// expects an n x 1 vector; modulos all contents by 2
 	void moduloBy2(vector<vector<short>>& matrix)
 	{
-		for (int i = 0; i < matrix.size(); i++)
+		for (unsigned int i = 0; i < matrix.size(); i++)
 		{
 			matrix[i][0] = matrix[i][0] % 2;
 		}
@@ -123,7 +123,7 @@ private:
 
 		// convert list of 1s and 0s to binary short
 		short converted = 0;
-		for (int i = 0; i < matrix.size(); i++)
+		for (unsigned int i = 0; i < matrix.size(); i++)
 		{
 			// shift encoded left by 1; then 'or' with the next digit of 
 			// result to insert it in encoded  
@@ -169,6 +169,7 @@ private:
 		moduloBy2(parity_vector); 
 
 		// convert parity vector to binary number 
+		reverse(parity_vector.begin(), parity_vector.end()); 
 		short parity = matrixToShort(parity_vector); 
 
 		//DEBUG 
@@ -176,26 +177,29 @@ private:
 	}
 
 	// expects a matrix of size n x 1 containing 0s and 1s, and a number 
-	// representing which bit to flip. 
+	// representing which bit to flip (from 1 to matrix size). 
 	// flips the requested bit 
 	void correctMatrix(vector<vector<short>>& byte_matrix, short bit_to_flip)
 	{
+		// convert bit to flip to an index 
+		short flip_index = bit_to_flip - 1;
+
 		// error checking 
-		if (bit_to_flip >= byte_matrix.size())
+		if ((bit_to_flip < 1) || (bit_to_flip > byte_matrix.size()))
 		{
 			return; 
 		}
 
 		// flip 0 to 1 
-		else if (byte_matrix[bit_to_flip][0] == 0)
+		else if (byte_matrix[flip_index][0] == 0)
 		{
-			byte_matrix[bit_to_flip][0] = 1; 
+			byte_matrix[flip_index][0] = 1; 
 		}
 
 		// flip 1 to 0
 		else
 		{
-			byte_matrix[bit_to_flip][0] = 0; 
+			byte_matrix[flip_index][0] = 0; 
 		}
 		return; 
 	}
@@ -241,7 +245,6 @@ private:
 		// if error status is non-zero, there's an error. 
 		if (error_status != 0)
 		{
-			
 			// ask the user if we should decode 
 			if (asked_user == false)
 			{
