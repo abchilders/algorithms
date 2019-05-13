@@ -1,16 +1,3 @@
-/*
-Assignment: PA #5 - Levenshtein Edit Distance
-Description: This program suggests corrections for misspelled words of an
-	input file, and outputs the corrected text to an output file.
-Author: Alex Childers
-HSU ID: 013145324
-Completion time: 11.75 hours
-In completing this program, I received help from the following people:
-	N/A
-*/
-
-// This file is provided by Adam Carter. 
-
 #ifndef STRINGSPLITTER_H
 #define STRINGSPLITTER_H
 
