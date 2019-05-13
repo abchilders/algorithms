@@ -66,8 +66,5 @@ int main(int argc, char* argv[])
       cout << "Unexpected command." << endl;
    }
 
-   //DEBUG - testing ability to convert a character into two bytes
-   pair<short, short> test = coder.splitChar('T'); 
-
    return 0; 
 }

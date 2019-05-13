@@ -122,10 +122,12 @@
     <ClInclude Include="StringSplitter.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="sample - Copy.txt" />
     <Text Include="sample.txt" />
     <Text Include="sample_garbled.decoded.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="sample.txt - Copy.coded" />
     <None Include="sample.txt.coded" />
     <None Include="sample_garbled.txt.coded" />
   </ItemGroup>
