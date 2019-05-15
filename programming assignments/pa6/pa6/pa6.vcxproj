@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HammingCodes.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +127,7 @@
     <Text Include="sample.decoded.txt" />
     <Text Include="sample.txt" />
     <Text Include="sample_garbled.decoded.txt" />
+    <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sample.txt - Copy.coded" />
